@@ -1,0 +1,6 @@
+rootProject.name = 'light-security'
+include 'light-security-core'
+include 'light-security-app'
+include 'light-security-browser'
+include 'light-security-client'
+

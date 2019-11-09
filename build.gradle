@@ -1,0 +1,71 @@
+//配置文件引入需要放在头部
+apply from: 'config.gradle'
+
+buildscript {
+
+    apply from: 'config.gradle'
+
+    repositories {
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+        mavenCentral()
+    }
+
+    dependencies {
+        //加入springboot插件
+        /**
+         * 实现了将项目打包成可执行jar或war文件, 运行Spring Boot应用程序和使用spring-boot-dependencies提供的依赖管理功能.
+         * 该插件要求使用Gradle 4.0或以上版本
+         */
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${rootProject.ext.spring.boot_version}")
+    }
+}
+
+allprojects {
+
+    apply plugin: 'java'//必要插件
+    /**
+     * 当应用io.spring.dependency-management插件的时候, Spring Boot插件(spring-boot-gradle-plugin)将自动从使用的Spring Boot版本导入spring-boot-dependencies,
+     * 你可以省略bom中声明依赖的版本号
+     */
+    apply plugin: 'io.spring.dependency-management'
+
+    //------------ 部分配置 start ---------------
+    group(rootProject.ext.root.group)
+    version(rootProject.ext.root.version)
+    // java文件编码方式设置为utf-8
+    tasks.withType(JavaCompile){
+        options.encoding = rootProject.ext.root.encoding
+        sourceCompatibility = rootProject.ext.root.sdkVersion
+        targetCompatibility = rootProject.ext.root.sdkVersion
+    }
+    //------------ 部分配置 end -----------------
+
+    repositories {
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+        mavenCentral()
+    }
+
+    dependencyManagement{
+        imports {
+            mavenBom "io.spring.platform:platform-bom:${rootProject.ext.spring.platform_bom_version}"
+//            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${rootProject.ext.spring.cloud_dependencies_version}"
+        }
+    }
+
+    dependencies {
+        compile 'org.springframework.boot:spring-boot-starter-web'
+        compile 'org.springframework.boot:spring-boot-configuration-processor'
+        compile 'org.springframework.boot:spring-boot-starter-data-redis'
+        compile 'org.projectlombok:lombok'
+        runtime 'org.postgresql:postgresql'
+        compile 'org.apache.commons:commons-lang3'
+        testCompile 'org.springframework.boot:spring-boot-starter-test'
+
+        compile "${rootProject.ext.dependencies.swagger_ui}"
+        //排除swagger2本身引用的swagger-models-1.5.20.jar(这版本有bug),引入swagger-models:1.5.22
+        compile("${rootProject.ext.dependencies.swagger_swagger2}") {
+            exclude group: 'io.swagger:swagger-models:1.5.20'
+        }
+        compile "${rootProject.ext.dependencies.swagger_models}"
+    }
+}
