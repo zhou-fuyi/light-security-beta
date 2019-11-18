@@ -1,0 +1,5 @@
+#
+spring:
+  # 环境配置：dev|prod
+  profiles:
+    active: dev
