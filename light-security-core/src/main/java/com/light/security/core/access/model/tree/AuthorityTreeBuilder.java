@@ -1,5 +1,7 @@
 package com.light.security.core.access.model.tree;
 
+import com.light.security.core.exception.TreeBuilderException;
+
 import java.util.Collection;
 
 /**
@@ -11,7 +13,7 @@ import java.util.Collection;
 public abstract class AuthorityTreeBuilder implements TreeBuilder<AuthorityTree> {
 
     @Override
-    public AuthorityTree builder(Collection<? extends Tree> trees) {
+    public AuthorityTree builder(Collection<? extends Tree> trees) throws TreeBuilderException {
         return null;
     }
 
