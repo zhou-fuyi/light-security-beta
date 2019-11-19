@@ -12,7 +12,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class SecurityProperties {
 
     /**
-     * 锅过滤器配置
+     * 过滤器配置
      */
     private FilterProperties filter = new FilterProperties();
 

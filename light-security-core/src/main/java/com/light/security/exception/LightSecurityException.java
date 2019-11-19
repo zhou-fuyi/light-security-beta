@@ -2,7 +2,7 @@ package com.light.security.exception;
 
 /**
  * @ClassName LightSecurityException
- * @Description LightSecurity内异顶层类, 其下大体分为<code>AuthenticationException</code>和<code>AuthorizationException</code>
+ * @Description LightSecurity内异常顶层类, 其下大体分为<code>AuthenticationException</code>和<code>AuthorizationException</code>
  * @Author ZhouJian
  * @Date 2019-11-18
  */
