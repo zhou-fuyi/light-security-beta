@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @ClassName AuthorityTreeBuilder
@@ -17,7 +18,7 @@ public abstract class AbstractAuthorityTreeBuilder implements AuthorityTreeBuild
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
-    public AuthorityTree build(Collection<? extends Tree> trees) throws TreeBuilderException {
+    public List<AuthorityTree> build(Collection<? extends Tree> trees) throws TreeBuilderException {
         if (logger.isDebugEnabled()){
             logger.debug("开始进行权限树的构建");
         }
@@ -30,10 +31,6 @@ public abstract class AbstractAuthorityTreeBuilder implements AuthorityTreeBuild
      * @return
      * @throws TreeBuilderException
      */
-    protected abstract AuthorityTree doBuild(Collection<? extends Tree> authorities) throws TreeBuilderException;
+    protected abstract List<AuthorityTree> doBuild(Collection<? extends Tree> authorities) throws TreeBuilderException;
 
-    @Override
-    public boolean support(Class<?> target) {
-        return false;
-    }
 }

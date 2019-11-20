@@ -1,5 +1,6 @@
 package com.light.security.core.access.model.tree;
 
+import com.light.security.core.access.authority.GrantedAuthority;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collection;
@@ -19,7 +20,8 @@ public abstract class AbstractAuthorityTree implements AuthorityTree {
     private String name;
     private boolean enabled;
     private boolean open;
-    Collection<? extends AbstractAuthorityTree> children;
+    private Collection<? extends AbstractAuthorityTree> children;
+    private Collection<? extends GrantedAuthority> originAuthority;
 
     public AbstractAuthorityTree() {
     }
@@ -32,6 +34,7 @@ public abstract class AbstractAuthorityTree implements AuthorityTree {
         this.enabled = builder.enabled;
         this.open = builder.open;
         this.children = builder.children;
+        this.originAuthority = builder.originAuthority;
     }
 
     public Integer getId() {
@@ -93,6 +96,7 @@ public abstract class AbstractAuthorityTree implements AuthorityTree {
     public static abstract class Builder {
 
         private Integer id;
+        private Collection<? extends GrantedAuthority> originAuthority;
 
         private Integer parentId;
         private String code;
@@ -101,11 +105,12 @@ public abstract class AbstractAuthorityTree implements AuthorityTree {
         private boolean open;
         Collection<? extends AbstractAuthorityTree> children = Collections.EMPTY_LIST;
 
-        public Builder(Integer id){
-            if (id == null){
-                throw new IllegalArgumentException("构造器不接受空值参数 --> id is null");
+        public Builder(Integer id, Collection<? extends GrantedAuthority> originAuthority){
+            if (id == null || CollectionUtils.isEmpty(originAuthority)){
+                throw new IllegalArgumentException("构造器不接受空值参数 --> id is null or ( originAuthority is null or empty )");
             }
             this.id = id;
+            this.originAuthority = Collections.unmodifiableCollection(originAuthority);
         }
 
         public Builder parentId(Integer parentId){
@@ -147,11 +152,14 @@ public abstract class AbstractAuthorityTree implements AuthorityTree {
 
     @Override
     public AuthorityTree loadRootNode() {
-        return null;
+        if (this.parentId == null)
+            return this;
+        return loadParentNode(this.parentId).loadRootNode();
     }
 
     @Override
     public AuthorityTree loadParentNode(Integer parentId) {
+        parentId = parentId == null ? this.parentId : parentId;
         return null;
     }
 
