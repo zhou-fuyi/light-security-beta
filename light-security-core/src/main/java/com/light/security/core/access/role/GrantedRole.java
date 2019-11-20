@@ -1,5 +1,7 @@
 package com.light.security.core.access.role;
 
+import com.light.security.core.access.authority.GrantedAuthority;
+
 import java.util.Collection;
 
 /**

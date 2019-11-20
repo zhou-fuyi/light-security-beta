@@ -17,7 +17,7 @@ public interface TreeBuilder<T> {
      * @param trees
      * @return
      */
-    T builder(Collection<? extends Tree> trees) throws TreeBuilderException;
+    T build(Collection<? extends Tree> trees) throws TreeBuilderException;
 
     /**
      * 判断当前构建器是否支持

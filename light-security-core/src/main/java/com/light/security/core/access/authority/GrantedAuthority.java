@@ -1,4 +1,4 @@
-package com.light.security.core.access.role;
+package com.light.security.core.access.authority;
 
 import com.light.security.core.access.model.Authority;
 import com.light.security.core.access.model.tree.Tree;
@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 /**
  * @InterfaceName GrantedAuthority
- * @Description TODO
+ * @Description 被授予的权限
  * @Author ZhouJian
  * @Date 2019-11-19
  */

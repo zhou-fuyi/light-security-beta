@@ -1,11 +1,33 @@
 package com.light.security.core.access.model.tree;
 
+import java.util.Collection;
+
 /**
- * @InterfaceName TreeNode
- * @Description TODO
+ * @InterfaceName Tree
+ * @Description 树的顶层接口
  * @Author ZhouJian
  * @Date 2019-11-19
  */
 public interface Tree {
+
+    /**
+     * 获取根节点
+     * @return
+     */
+    Tree loadRootNode();
+
+    /**
+     * 根据父节点Id查询父节点
+     * @param parentId
+     * @return
+     */
+    Tree loadParentNode(Integer parentId);
+
+    /**
+     * 根据指定节点的Id查找所有的孩子节点（遍历）
+     * @param id
+     * @return
+     */
+    Collection<? extends Tree> loadChildrenNode(Integer id);
 
 }
