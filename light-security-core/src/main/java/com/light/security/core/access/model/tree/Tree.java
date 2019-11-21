@@ -18,6 +18,7 @@ public interface Tree {
 
     /**
      * 根据父节点Id查询父节点
+     * 如果传入parentId为null, 则使用当前树的parentId查询
      * @param parentId
      * @return
      */
@@ -25,6 +26,7 @@ public interface Tree {
 
     /**
      * 根据指定节点的Id查找所有的孩子节点（遍历）
+     * 如果传入id为null, 则使用当前树的id查询
      * @param id
      * @return
      */

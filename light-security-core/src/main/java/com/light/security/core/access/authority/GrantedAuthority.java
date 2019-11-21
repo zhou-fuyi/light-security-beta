@@ -25,4 +25,16 @@ public interface GrantedAuthority extends Tree, Serializable {
      */
     String getAuthorityType();
 
+    /**
+     * 获取当前权限的父ID
+     * @return
+     */
+    Integer getAuthorityParentId();
+
+    /**
+     * 获取当前权限的ID
+     * @return
+     */
+    Integer getAuthorityId();
+
 }

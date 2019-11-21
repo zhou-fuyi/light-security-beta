@@ -1,5 +1,6 @@
 package com.light.security.core.access.model;
 
+import com.light.security.core.access.model.tree.builder.TreeBuilderConstant;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
@@ -107,6 +108,29 @@ public abstract class AbstractAuthority implements Authority{
 
     public void setOpen(boolean open) {
         this.open = open;
+    }
+
+    @Override
+    public String getAuthorityType() {
+        return getType();
+    }
+
+    @Override
+    public Integer getAuthorityParentId() {
+        return getParentId();
+    }
+
+    @Override
+    public Integer getAuthorityId() {
+        return getId();
+    }
+
+    @Override
+    public void setAuthorityParentId(Integer parentId) {
+        if (parentId != TreeBuilderConstant.NULL_KEY){
+            throw new IllegalArgumentException("来自接口的对于权限父ID的修改, 参数传入非法, 参数值参考TreeBuilderConstant.NULL_KEY");
+        }
+        setParentId(parentId);
     }
 
     public static abstract class Builder{

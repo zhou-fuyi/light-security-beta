@@ -1,5 +1,10 @@
 package com.light.security.core.access.model.tree;
 
+import com.light.security.core.access.authority.GrantedAuthority;
+import com.light.security.core.access.model.tree.builder.manager.TreeBuilderManager;
+
+import java.util.Collection;
+
 /**
  * @ClassName ElementAuthorityTree
  * @Description 元素权限菜单数
@@ -16,8 +21,8 @@ public class ElementAuthorityTree extends AbstractAuthorityTree {
 
     public static class Builder extends AbstractAuthorityTree.Builder {
 
-        public Builder(Integer id) {
-            super(id);
+        public Builder(Integer id, Collection<? extends GrantedAuthority> originAuthority, TreeBuilderManager treeBuilderManager) {
+            super(id, originAuthority, treeBuilderManager);
         }
 
         @Override

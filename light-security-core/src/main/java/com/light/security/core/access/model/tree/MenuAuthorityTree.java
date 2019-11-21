@@ -1,6 +1,11 @@
 package com.light.security.core.access.model.tree;
 
+import com.light.security.core.access.authority.GrantedAuthority;
+import com.light.security.core.access.model.MenuAuthority;
+import com.light.security.core.access.model.tree.builder.manager.TreeBuilderManager;
 import org.springframework.util.StringUtils;
+
+import java.util.Collection;
 
 /**
  * @ClassName MenuAuthorityTree
@@ -44,8 +49,8 @@ public class MenuAuthorityTree extends AbstractAuthorityTree {
 
         private String icon;
 
-        public Builder(Integer id, String link) {
-            super(id);
+        public Builder(Integer id, String link, Collection<? extends GrantedAuthority> originAuthority, TreeBuilderManager treeBuilderManager) {
+            super(id, originAuthority, treeBuilderManager);
             if (StringUtils.isEmpty(link)){
                 throw new IllegalArgumentException("构造器不接受空值参数 --> link is null or '' ");
             }

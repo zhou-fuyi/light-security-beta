@@ -1,8 +1,12 @@
 package com.light.security.core.access.model.tree;
 
 import com.light.security.core.access.authority.GrantedAuthority;
+import com.light.security.core.access.model.tree.builder.AbstractAuthorityTreeBuilder;
+import com.light.security.core.access.model.tree.builder.TreeBuilderConstant;
+import com.light.security.core.access.model.tree.builder.manager.TreeBuilderManager;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -20,8 +24,9 @@ public abstract class AbstractAuthorityTree implements AuthorityTree {
     private String name;
     private boolean enabled;
     private boolean open;
-    private Collection<? extends AbstractAuthorityTree> children;
+    private Collection<? extends AuthorityTree> children;
     private Collection<? extends GrantedAuthority> originAuthority;
+    private TreeBuilderManager treeBuilderManager;
 
     public AbstractAuthorityTree() {
     }
@@ -35,6 +40,7 @@ public abstract class AbstractAuthorityTree implements AuthorityTree {
         this.open = builder.open;
         this.children = builder.children;
         this.originAuthority = builder.originAuthority;
+        this.treeBuilderManager = builder.treeBuilderManager;
     }
 
     public Integer getId() {
@@ -85,11 +91,11 @@ public abstract class AbstractAuthorityTree implements AuthorityTree {
         this.open = open;
     }
 
-    public Collection<? extends AbstractAuthorityTree> getChildren() {
+    public Collection<? extends AuthorityTree> getChildren() {
         return children;
     }
 
-    public void setChildren(Collection<? extends AbstractAuthorityTree> children) {
+    public void setChildren(Collection<? extends AuthorityTree> children) {
         this.children = children;
     }
 
@@ -97,20 +103,22 @@ public abstract class AbstractAuthorityTree implements AuthorityTree {
 
         private Integer id;
         private Collection<? extends GrantedAuthority> originAuthority;
+        private TreeBuilderManager treeBuilderManager;
 
         private Integer parentId;
         private String code;
         private String name;
         private boolean enabled;
         private boolean open;
-        Collection<? extends AbstractAuthorityTree> children = Collections.EMPTY_LIST;
+        Collection<? extends AuthorityTree> children = Collections.EMPTY_LIST;
 
-        public Builder(Integer id, Collection<? extends GrantedAuthority> originAuthority){
-            if (id == null || CollectionUtils.isEmpty(originAuthority)){
-                throw new IllegalArgumentException("构造器不接受空值参数 --> id is null or ( originAuthority is null or empty )");
+        public Builder(Integer id, Collection<? extends GrantedAuthority> originAuthority, TreeBuilderManager treeBuilderManager){
+            if (id == null || CollectionUtils.isEmpty(originAuthority) || treeBuilderManager == null){
+                throw new IllegalArgumentException("构造器不接受空值参数 --> id is null or ( originAuthority is null or empty ) or treeBuilderManager is null");
             }
             this.id = id;
             this.originAuthority = Collections.unmodifiableCollection(originAuthority);
+            this.treeBuilderManager = treeBuilderManager;
         }
 
         public Builder parentId(Integer parentId){
@@ -138,9 +146,10 @@ public abstract class AbstractAuthorityTree implements AuthorityTree {
             return this;
         }
 
-        public Builder children(Collection<? extends AbstractAuthorityTree> children){
+        public Builder children(Collection<? extends AuthorityTree> children){
             if (CollectionUtils.isEmpty(children)){
-                throw new IllegalArgumentException("传入孩子节点集合不能为空");
+//                throw new IllegalArgumentException("传入孩子节点集合不能为空");
+                children = Collections.EMPTY_LIST;
             }
             this.children = children;
             return this;
@@ -152,7 +161,7 @@ public abstract class AbstractAuthorityTree implements AuthorityTree {
 
     @Override
     public AuthorityTree loadRootNode() {
-        if (this.parentId == null)
+        if (this.parentId == TreeBuilderConstant.NULL_KEY)
             return this;
         return loadParentNode(this.parentId).loadRootNode();
     }
@@ -160,11 +169,32 @@ public abstract class AbstractAuthorityTree implements AuthorityTree {
     @Override
     public AuthorityTree loadParentNode(Integer parentId) {
         parentId = parentId == null ? this.parentId : parentId;
-        return null;
+        Integer finalParentId = parentId;
+        if (finalParentId == null || finalParentId == TreeBuilderConstant.NULL_KEY){
+            return null;
+        }
+        Collection<GrantedAuthority> authorityNodes = new ArrayList<>();
+        this.originAuthority.forEach(authority -> {
+            if (authority.getAuthorityId() == finalParentId){
+                authorityNodes.add(authority);
+                return;
+            }
+        });
+        return (AuthorityTree) treeBuilderManager.singleBuild(authorityNodes.iterator().next(), this.originAuthority);
     }
 
     @Override
     public Collection<AuthorityTree> loadChildrenNode(Integer id) {
-        return null;
+        if (id != null){
+            Collection<GrantedAuthority> authorityNodes = new ArrayList<>();
+            this.originAuthority.forEach(authority -> {
+                if (authority.getAuthorityParentId() == id){
+                    authorityNodes.add(authority);
+                    return;
+                }
+            });
+            return (Collection<AuthorityTree>) treeBuilderManager.doBuild(authorityNodes, this.originAuthority);
+        }
+        return (Collection<AuthorityTree>) this.children;
     }
 }

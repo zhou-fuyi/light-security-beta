@@ -20,6 +20,27 @@ public interface Authority {
      */
     boolean isOpen();
 
+    /**
+     * 获取权限类型
+     * @return
+     */
+    String getAuthorityType();
 
+    /**
+     * 设置当前权限的父ID, 这里用于处理Lambda使用groupBy后生成HashMap的key不能为null的情况, 先行将所有为null的置为一个特殊值
+     */
+    void setAuthorityParentId(Integer parentId);
+
+    /**
+     * 获取当前权限的父ID
+     * @return
+     */
+    Integer getAuthorityParentId();
+
+    /**
+     * 获取当前权限的ID
+     * @return
+     */
+    Integer getAuthorityId();
 
 }

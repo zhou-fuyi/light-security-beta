@@ -1,5 +1,7 @@
-package com.light.security.core.access.model.tree;
+package com.light.security.core.access.model.tree.builder;
 
+import com.light.security.core.access.model.tree.Tree;
+import com.light.security.core.access.model.tree.builder.manager.TreeBuilderManager;
 import com.light.security.core.exception.TreeBuilderException;
 
 import java.util.Collection;
@@ -11,14 +13,16 @@ import java.util.List;
  * @Author ZhouJian
  * @Date 2019-11-19
  */
-public interface TreeBuilder<T> {
+public interface TreeBuilder {
 
     /**
      * 用于构建树
-     * @param trees
+     * @param root
+     * @param context
      * @return
+     * @throws TreeBuilderException
      */
-    List<T> build(Collection<? extends Tree> trees) throws TreeBuilderException;
+    List<? extends Tree> build(Collection<? extends Tree> root, Collection<? extends Tree> context) throws TreeBuilderException;
 
     /**
      * 判断当前构建器是否支持
@@ -30,4 +34,16 @@ public interface TreeBuilder<T> {
      * @return
      */
     boolean support(Class<?> target);
+
+    /**
+     * 获取当前树构建器的构建管理器
+     * @return
+     */
+    TreeBuilderManager getTreeBuilderManager();
+
+    /**
+     * 设置当前构建器的构建管理器
+     * @param treeBuilderManager
+     */
+    void setTreeBuilderManager(TreeBuilderManager treeBuilderManager);
 }
