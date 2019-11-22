@@ -16,6 +16,11 @@ public class SecurityProperties {
      */
     private FilterProperties filter = new FilterProperties();
 
+    /**
+     * 缓存配置器
+     */
+    private CacheProperties cache = new CacheProperties();
+
     public SecurityProperties() {
     }
 
@@ -25,5 +30,13 @@ public class SecurityProperties {
 
     public void setFilter(FilterProperties filter) {
         this.filter = filter;
+    }
+
+    public CacheProperties getCache() {
+        return cache;
+    }
+
+    public void setCache(CacheProperties cache) {
+        this.cache = cache;
     }
 }
