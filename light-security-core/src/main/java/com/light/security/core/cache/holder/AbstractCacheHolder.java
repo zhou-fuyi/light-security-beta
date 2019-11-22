@@ -12,7 +12,7 @@ import org.springframework.util.StringUtils;
  * @Author ZhouJian
  * @Date 2019-11-22
  */
-public abstract class AbstractCacheHolder implements CacheHolder {
+public abstract class AbstractCacheHolder<K, V> implements CacheHolder<K, V> {
 
 
     private final Cache cache;

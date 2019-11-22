@@ -9,7 +9,7 @@ import com.light.security.core.cache.context.ContextCache;
  * @Author ZhouJian
  * @Date 2019-11-22
  */
-public abstract class AbstractInternalContextCacheHolder extends AbstractCacheHolder implements ContextCache {
+public abstract class AbstractInternalContextCacheHolder<K, V> extends AbstractCacheHolder<K, V> {
 
     private final static String SUPPORT_CACHE_TYPE = "INTERNAL_CONTEXT";
 
@@ -22,8 +22,4 @@ public abstract class AbstractInternalContextCacheHolder extends AbstractCacheHo
         return (ContextCache) super.getCache();
     }
 
-    @Override
-    public String getName() {
-        return getCache().getName();
-    }
 }

@@ -1,4 +1,4 @@
-package com.light.security.core.cache.context.threadlocal;
+package com.light.security.core.authentication.context;
 
 import com.light.security.core.authentication.token.Authentication;
 
@@ -8,5 +8,5 @@ import com.light.security.core.authentication.token.Authentication;
  * @Author ZhouJian
  * @Date 2019-11-22
  */
-public class SecurityContext extends AbstractThreadLocalContextCache<Authentication> {
+public class SecurityContext extends AbstractThreadLocalContext<Authentication> {
 }

@@ -6,8 +6,12 @@ package com.light.security.core.cache;
  * @Author ZhouJian
  * @Date 2019-11-22
  */
-public interface CacheHolder {
+public interface CacheHolder<K, V> {
 
+    /**
+     * 获取缓存实例
+     * @return
+     */
     Cache getCache();
 
     /**
@@ -17,5 +21,30 @@ public interface CacheHolder {
      * @return
      */
     boolean support(String currentCacheType, Class<?> target);
+
+    /**
+     * 插入数据
+     * @param k
+     * @param v
+     */
+    void put(K k, V v);
+
+    /**
+     * 根据指定key查询数据
+     * @param k
+     * @return
+     */
+    V get(K k);
+
+    /**
+     * 根据指定的key删除数据
+     * @param k
+     */
+    void remove(K k);
+
+    /**
+     * 清空缓存
+     */
+    void clearCache();
 
 }

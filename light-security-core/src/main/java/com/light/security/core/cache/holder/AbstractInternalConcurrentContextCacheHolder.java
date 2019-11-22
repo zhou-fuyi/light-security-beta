@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Author ZhouJian
  * @Date 2019-11-22
  */
-public abstract class AbstractInternalConcurrentContextCacheHolder<K, V> extends AbstractInternalContextCacheHolder implements ConcurrentContextCache<K, V> {
+public abstract class AbstractInternalConcurrentContextCacheHolder<K, V> extends AbstractInternalContextCacheHolder<K, V>{
 
     protected AbstractInternalConcurrentContextCacheHolder(ConcurrentContextCache cache) {
         super(cache);
@@ -36,17 +36,8 @@ public abstract class AbstractInternalConcurrentContextCacheHolder<K, V> extends
     }
 
     @Override
-    public ConcurrentHashMap<K, V> getContext() {
-        return (ConcurrentHashMap<K, V>) getCache().getContext();
-    }
-
-    @Override
-    public void cleanContext() {
+    public void clearCache() {
         getCache().cleanContext();
     }
 
-    @Override
-    public int getContextCount() {
-        return getCache().getContextCount();
-    }
 }

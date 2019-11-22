@@ -1,7 +1,6 @@
-package com.light.security.core.cache.context.threadlocal;
+package com.light.security.core.authentication.context;
 
 import com.light.security.core.cache.context.AbstractContextCache;
-import com.light.security.core.cache.context.ThreadLocalContextCache;
 
 /**
  * @ClassName AbstractThreadLocalContextCache
@@ -9,14 +8,14 @@ import com.light.security.core.cache.context.ThreadLocalContextCache;
  * @Author ZhouJian
  * @Date 2019-11-22
  */
-public abstract class AbstractThreadLocalContextCache<T> extends AbstractContextCache implements ThreadLocalContextCache<T> {
+public abstract class AbstractThreadLocalContext<T> extends AbstractContextCache implements ThreadLocalContext<T> {
 
     private ThreadLocal<T> threadLocalContextCache = new ThreadLocal<>();
 
-    protected AbstractThreadLocalContextCache(){
+    protected AbstractThreadLocalContext(){
         getCacheInstanceMap().forEach((k, v) -> {
-            if (v instanceof AbstractThreadLocalContextCache){
-                logger.info("实例全类名: {},  实例成员 -> {} <- 打印信息：{} ", k, threadLocalContextCache.getClass().getName(), ((AbstractThreadLocalContextCache) v).threadLocalContextCache);
+            if (v instanceof AbstractThreadLocalContext){
+                logger.info("实例全类名: {},  实例成员 -> {} <- 打印信息：{} ", k, threadLocalContextCache.getClass().getName(), ((AbstractThreadLocalContext) v).threadLocalContextCache);
             }
         });
     }

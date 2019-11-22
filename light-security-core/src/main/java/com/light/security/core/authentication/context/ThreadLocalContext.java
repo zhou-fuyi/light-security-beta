@@ -1,12 +1,14 @@
-package com.light.security.core.cache.context;
+package com.light.security.core.authentication.context;
+
+import com.light.security.core.cache.context.ContextCache;
 
 /**
  * @InterfaceName ThreadLocalContextCache
- * @Description 使用<code>ThreadLocal</code>作为容器实现缓存的顶层接口
+ * @Description 使用<code>ThreadLocal</code>作为容器的顶层接口
  * @Author ZhouJian
  * @Date 2019-11-22
  */
-public interface ThreadLocalContextCache<T> extends ContextCache {
+public interface ThreadLocalContext<T> extends ContextCache {
 
     /**
      * 获取ThreadLocal对象
