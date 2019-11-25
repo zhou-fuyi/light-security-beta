@@ -1,7 +1,8 @@
 package com.light.security.core.cache.holder;
 
 import com.light.security.core.authentication.token.Authentication;
-import com.light.security.core.cache.context.ConcurrentContextCache;
+import com.light.security.core.cache.context.concurrent.SupportExpiredAuthenticatedContextCache;
+import com.light.security.core.cache.model.InternalExpiredValueWrapper;
 
 /**
  * @ClassName AuthenticatedContextCacheHolder
@@ -9,10 +10,9 @@ import com.light.security.core.cache.context.ConcurrentContextCache;
  * @Author ZhouJian
  * @Date 2019-11-22
  */
-public class AuthenticatedContextCacheHolder extends AbstractInternalConcurrentContextCacheHolder<String, Authentication> {
+public class AuthenticatedContextCacheHolder extends AbstractInternalConcurrentContextCacheHolder<String, InternalExpiredValueWrapper<Authentication>> {
 
-
-    public AuthenticatedContextCacheHolder(ConcurrentContextCache cache) {
+    public AuthenticatedContextCacheHolder(SupportExpiredAuthenticatedContextCache cache) {
         super(cache);
     }
 

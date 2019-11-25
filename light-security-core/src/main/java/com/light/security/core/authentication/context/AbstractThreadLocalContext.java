@@ -10,19 +10,19 @@ import com.light.security.core.cache.context.AbstractContextCache;
  */
 public abstract class AbstractThreadLocalContext<T> extends AbstractContextCache implements ThreadLocalContext<T> {
 
-    private ThreadLocal<T> threadLocalContextCache = new ThreadLocal<>();
+    private ThreadLocal<T> threadLocalContext = new ThreadLocal<>();
 
     protected AbstractThreadLocalContext(){
         getCacheInstanceMap().forEach((k, v) -> {
             if (v instanceof AbstractThreadLocalContext){
-                logger.info("实例全类名: {},  实例成员 -> {} <- 打印信息：{} ", k, threadLocalContextCache.getClass().getName(), ((AbstractThreadLocalContext) v).threadLocalContextCache);
+                logger.info("实例全类名: {},  实例成员 -> {} <- 打印信息：{} ", k, threadLocalContext.getClass().getName(), ((AbstractThreadLocalContext) v).threadLocalContext);
             }
         });
     }
 
     @Override
     public void setContent(T t) {
-        threadLocalContextCache.set(t);
+        threadLocalContext.set(t);
     }
 
     @Override
@@ -35,16 +35,16 @@ public abstract class AbstractThreadLocalContext<T> extends AbstractContextCache
 
     @Override
     public T getContext() {
-        return threadLocalContextCache.get();
+        return threadLocalContext.get();
     }
 
     @Override
     public void cleanContext() {
-        threadLocalContextCache.remove();
+        threadLocalContext.remove();
     }
 
     @Override
     public int getContextCount() {
-        return threadLocalContextCache.get() == null ? 0 : 1;
+        return threadLocalContext.get() == null ? 0 : 1;
     }
 }

@@ -1,7 +1,7 @@
 package com.light.security.core.authentication.context.holder;
 
-import com.light.security.core.authentication.token.Authentication;
 import com.light.security.core.authentication.context.SecurityContext;
+import com.light.security.core.authentication.context.InternalSecurityContext;
 
 /**
  * @ClassName SecurityContextHolder
@@ -9,9 +9,9 @@ import com.light.security.core.authentication.context.SecurityContext;
  * @Author ZhouJian
  * @Date 2019-11-22
  */
-public class SecurityContextHolder extends AbstractThreadLocalContextHolder<Authentication> {
+public class SecurityContextHolder extends AbstractThreadLocalContextHolder<SecurityContext> {
 
-    public SecurityContextHolder(SecurityContext cache) {
+    public SecurityContextHolder(InternalSecurityContext cache) {
         super(cache);
     }
 

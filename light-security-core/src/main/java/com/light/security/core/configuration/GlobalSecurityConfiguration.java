@@ -5,6 +5,8 @@ import com.light.security.core.access.model.tree.builder.ElementAuthorityTreeBui
 import com.light.security.core.access.model.tree.builder.MenuAuthorityTreeBuilder;
 import com.light.security.core.access.model.tree.builder.manager.AuthorityTreeBuilderManger;
 import com.light.security.core.access.model.tree.builder.manager.TreeBuilderManager;
+import com.light.security.core.authentication.context.InternalSecurityContext;
+import com.light.security.core.authentication.context.holder.SecurityContextHolder;
 import com.light.security.core.properties.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -61,6 +63,14 @@ public class GlobalSecurityConfiguration {
             item.setTreeBuilderManager(authorityTreeBuilderManger);
         });
         return authorityTreeBuilderManger;
+    }
+
+    /**
+     * SecurityContextHolder注册
+     * @return
+     */
+    public SecurityContextHolder securityContextHolder(){
+        return new SecurityContextHolder(new InternalSecurityContext());
     }
 
 }
