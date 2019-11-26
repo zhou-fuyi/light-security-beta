@@ -20,19 +20,12 @@ import java.io.IOException;
  * @Date 2019-11-25
  */
 public class SecurityContextPretreatmentFilter extends GenericFilter{
-
-    private static String PROCESS_URL = "/*";
-
     /**
      * 负责加载和存储SecurityContext
      */
     private SecurityContextRepository securityContextRepository;
     //SecurityContext的数据持有者, 内部解决方案为ThreadLocal
     private SecurityContextHolder securityContextHolder;
-
-    public SecurityContextPretreatmentFilter(){
-        setProcessUrl(PROCESS_URL);
-    }
 
     public SecurityContextRepository getSecurityContextRepository() {
         return securityContextRepository;

@@ -63,6 +63,9 @@ public class ServletUtils {
         if (logger.isDebugEnabled()){
             logger.debug("当前请求的API地址：{}", servletPath);
         }
+        if (request.getPathInfo() != null){
+            servletPath += request.getPathInfo();
+        }
         return servletPath;
     }
 

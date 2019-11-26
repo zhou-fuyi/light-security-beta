@@ -1,6 +1,8 @@
 package com.light.security.core.filter;
 
+import com.light.security.core.authentication.AuthenticationDetailsSource;
 import com.light.security.core.authentication.AuthenticationManager;
+import com.light.security.core.authentication.WebAuthenticationDetailsSource;
 import com.light.security.core.authentication.context.holder.SecurityContextHolder;
 import com.light.security.core.authentication.event.InteractiveAuthenticationSuccessEvent;
 import com.light.security.core.authentication.handler.AuthenticationFailureHandler;
@@ -9,6 +11,8 @@ import com.light.security.core.authentication.token.Authentication;
 import com.light.security.core.exception.AuthenticationException;
 import com.light.security.core.exception.InternalAuthenticationServiceException;
 import com.light.security.core.util.ServletUtils;
+import com.light.security.core.util.matcher.AntPathRequestMatcher;
+import com.light.security.core.util.matcher.RequestMatcher;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
@@ -29,7 +33,8 @@ import java.io.IOException;
  */
 public abstract class AbstractAuthenticationFilter extends GenericFilter{
 
-    private AntPathMatcher matcher;
+    //用于构建以及存放认证时产生的Details信息
+    protected AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource = new WebAuthenticationDetailsSource();
 
     //认证管理器
     private AuthenticationManager authenticationManager;
@@ -45,9 +50,8 @@ public abstract class AbstractAuthenticationFilter extends GenericFilter{
 
     protected SecurityContextHolder securityContextHolder;
 
-    protected AbstractAuthenticationFilter(String ... processUrl){
-        setProcessUrl(processUrl);
-        this.matcher = getAntPathMatcher();
+    protected AbstractAuthenticationFilter(RequestMatcher matcher){
+        super(matcher);
     }
 
     @Override
@@ -123,12 +127,7 @@ public abstract class AbstractAuthenticationFilter extends GenericFilter{
      * @return
      */
     private boolean requireAuthentication(HttpServletRequest request){
-        for (String processUrl : getProcessUrl()){
-            if (this.matcher.match(processUrl, ServletUtils.getServletPath(request))){
-                return true;
-            }
-        }
-        return false;
+        return getMatcher().matches(request);
     }
 
     /**
@@ -172,5 +171,10 @@ public abstract class AbstractAuthenticationFilter extends GenericFilter{
 
     public void setEventPublisher(ApplicationEventPublisher eventPublisher) {
         this.eventPublisher = eventPublisher;
+    }
+
+    public void setAuthenticationDetailsSource(AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource) {
+        Assert.notNull(authenticationDetailsSource, "authenticationDetailsSource 是必须存在的");
+        this.authenticationDetailsSource = authenticationDetailsSource;
     }
 }

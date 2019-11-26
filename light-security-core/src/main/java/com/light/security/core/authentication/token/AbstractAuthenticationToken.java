@@ -21,7 +21,7 @@ import java.util.List;
 public abstract class AbstractAuthenticationToken implements Authentication, CredentialsContainer {
 
     private Collection<? extends GrantedRole> roles;
-    private Object detail;
+    private Object details;
     private boolean authenticated = false;//默认情况下为false, 即为未认证状态
 
     public AbstractAuthenticationToken(Collection<? extends GrantedRole> roles){
@@ -70,19 +70,20 @@ public abstract class AbstractAuthenticationToken implements Authentication, Cre
         this.authenticated = authenticated;
     }
 
-    public Object getDetail(){
-        return this.detail;
+    @Override
+    public Object getDetails() {
+        return details;
     }
 
-    public void setDetail(Object detail) {
-        this.detail = detail;
+    public void setDetails(Object details) {
+        this.details = details;
     }
 
     @Override
     public void eraseCredentials() {
         eraseSecret(getCredentials());//这个方法应该是一个空执行
         eraseSecret(getSubject());//将会调用SubjectDetail的实现类Subject的eraseCredentials函数
-        eraseSecret(detail);//todo 暂时还没有分析, 上面的分析也待验证
+        eraseSecret(details);//todo 暂时还没有分析, 上面的分析也待验证
     }
 
     /**
@@ -103,13 +104,13 @@ public abstract class AbstractAuthenticationToken implements Authentication, Cre
         if (!roles.equals(test.roles)){
             return false;
         }
-        if ((this.detail == null) && (test.detail != null)){
+        if ((this.details == null) && (test.getDetails() != null)){
             return false;
         }
-        if ((this.detail != null) && (test.detail == null)){
+        if ((this.details != null) && (test.getDetails() == null)){
             return false;
         }
-        if ((this.detail != null) && (!this.detail.equals(test.getDetail()))) {
+        if ((this.details != null) && (!this.details.equals(test.getDetails()))) {
             return false;
         }
         if ((this.getCredentials() == null) && (test.getCredentials() != null)) {
@@ -146,8 +147,8 @@ public abstract class AbstractAuthenticationToken implements Authentication, Cre
             code ^= this.getCredentials().hashCode();
         }
 
-        if (this.getDetail() != null) {
-            code ^= this.getDetail().hashCode();
+        if (this.getDetails() != null) {
+            code ^= this.getDetails().hashCode();
         }
 
         if (this.isAuthenticated()) {

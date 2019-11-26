@@ -1,9 +1,10 @@
 package com.light.security.core.filter;
 
+import com.light.security.core.util.matcher.RequestMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.AntPathMatcher;
+import org.springframework.util.Assert;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
@@ -22,16 +23,30 @@ public abstract class GenericFilter implements Filter, FilterConfig, Initializin
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    //Ant风格URL匹配器
-    private static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher();
+    private static final String DEFAULT_PROCESS_URL = "/*";
+
+    //Request匹配器
+    private RequestMatcher matcher;
 
     protected volatile FilterConfig filterConfig;
 
-    //当前过滤器作用的Url组
-    protected String[] processUrl;
+    //当前过滤器作用的Url, 之前使用数组表示, 但是想着界限明确, 而且基本的Filter作用范围也很明确, 所以想着沿用SpringSecurity的套路
+//    protected String processUrl;
 
-    public static AntPathMatcher getAntPathMatcher() {
-        return ANT_PATH_MATCHER;
+    public GenericFilter(){
+    }
+
+    public GenericFilter(RequestMatcher matcher){
+        Assert.notNull(matcher, "构造器不接受空值参数 --> matcher is null");
+        this.matcher = matcher;
+    }
+
+    public void setMatcher(RequestMatcher matcher) {
+        this.matcher = matcher;
+    }
+
+    public RequestMatcher getMatcher() {
+        return matcher;
     }
 
     public FilterConfig getFilterConfig() {
@@ -42,14 +57,19 @@ public abstract class GenericFilter implements Filter, FilterConfig, Initializin
         this.filterConfig = filterConfig;
     }
 
-    public String[] getProcessUrl() {
-        return processUrl;
-    }
+//    public String getProcessUrl() {
+//        return processUrl;
+//    }
 
-    public void setProcessUrl(String... processUrl) {
-        logger.info("当前String多参数类型为: {}", processUrl.getClass().getName());
-        this.processUrl = processUrl;
-    }
+//    public void setProcessUrl(String processUrl) {
+//        if (StringUtils.isEmpty(processUrl)){
+//            if (logger.isDebugEnabled()){
+//                logger.debug("将会给当前过滤器: {} 指定默认的作用URL: {}", this.getClass().getSimpleName(), DEFAULT_PROCESS_URL);
+//            }
+//            processUrl = DEFAULT_PROCESS_URL;
+//        }
+//        this.processUrl = processUrl;
+//    }
 
     /**
      * 可以自定义一些装配工作

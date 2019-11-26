@@ -14,6 +14,6 @@ public class InteractiveAuthenticationSuccessListener implements ApplicationList
     @Override
     public void onApplicationEvent(InteractiveAuthenticationSuccessEvent event) {
 
-        // TODO: 2019-11-25 待完成 
+        // TODO: 2019-11-25 待完成
     }
 }

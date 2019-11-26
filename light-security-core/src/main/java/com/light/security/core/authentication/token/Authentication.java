@@ -35,10 +35,10 @@ public interface Authentication extends Principal, Serializable {
     void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException;
 
     /**
-     * 获取账户的一些额外的详情, 具体内容可自定义
+     * 获取账户的一些额外的细节, 具体内容可自定义
      * @return
      */
-    Object getDetail();
+    Object getDetails();
 
     /**
      * 获取账户的主体情况, 通常为账户基本信息, 如用户名等, 注意账户凭据的脱敏处理

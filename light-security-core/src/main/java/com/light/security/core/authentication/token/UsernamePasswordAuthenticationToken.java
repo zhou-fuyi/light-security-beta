@@ -5,24 +5,24 @@ import com.light.security.core.access.role.GrantedRole;
 import java.util.Collection;
 
 /**
- * @ClassName UsernamePasswordAuthentication
+ * @ClassName UsernamePasswordAuthenticationToken
  * @Description 账户密码登录时数据承载对象
  * @Author ZhouJian
  * @Date 2019-11-19
  */
-public class UsernamePasswordAuthentication extends AbstractAuthenticationToken {
+public class UsernamePasswordAuthenticationToken extends AbstractAuthenticationToken {
 
     private final Object subject;
     private Object credentials;
 
-    public UsernamePasswordAuthentication(Object subject, Object credentials){
+    public UsernamePasswordAuthenticationToken(Object subject, Object credentials){
         super(null);
         this.subject = subject;
         this.credentials = credentials;
         setAuthenticated(false);
     }
 
-    public UsernamePasswordAuthentication(Object subject, Object credentials, Collection<? extends GrantedRole> roles) {
+    public UsernamePasswordAuthenticationToken(Object subject, Object credentials, Collection<? extends GrantedRole> roles) {
         super(roles);
         this.subject = subject;
         this.credentials = credentials;
