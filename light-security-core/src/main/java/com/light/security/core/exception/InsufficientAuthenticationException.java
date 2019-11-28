@@ -2,7 +2,7 @@ package com.light.security.core.exception;
 
 /**
  * @ClassName InsufficientAuthenticationException
- * @Description TODO
+ * @Description 仿照SpringSecurity完成
  * Thrown if an authentication request is rejected because the credentials are not
  * sufficiently trusted.
  * <p>

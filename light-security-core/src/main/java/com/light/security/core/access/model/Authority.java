@@ -43,4 +43,10 @@ public interface Authority {
      */
     Integer getAuthorityId();
 
+    /**
+     * 获取权限比对的值
+     * @return
+     */
+    String getAuthorityPoint();
+
 }

@@ -126,6 +126,12 @@ public abstract class AbstractAuthority implements Authority{
     }
 
     @Override
+    public String getAuthorityPoint() {
+        return this.code;
+    }
+
+
+    @Override
     public void setAuthorityParentId(Integer parentId) {
         if (parentId != TreeBuilderConstant.NULL_KEY){
             throw new IllegalArgumentException("来自接口的对于权限父ID的修改, 参数传入非法, 参数值参考TreeBuilderConstant.NULL_KEY");
