@@ -1,4 +1,4 @@
-package com.light.security.core.configuration;
+package com.light.security.core.config.configuration;
 
 import com.light.security.core.access.model.tree.builder.AuthorityTreeBuilder;
 import com.light.security.core.access.model.tree.builder.ElementAuthorityTreeBuilder;

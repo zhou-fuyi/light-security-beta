@@ -1,4 +1,4 @@
-package com.light.security.core.configuration;
+package com.light.security.core.config.configuration;
 
 import com.light.security.core.cache.context.concurrent.SupportExpiredAuthenticatedContextCache;
 import com.light.security.core.cache.holder.AuthenticatedContextCacheHolder;

@@ -1,4 +1,4 @@
-package com.light.security.core.configuration;
+package com.light.security.core.config.configuration;
 
 import com.light.security.core.properties.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
