@@ -13,6 +13,8 @@ import java.util.*;
  * 到各个配置器上, 好比小说里的身化万千(但是又有点区别, 更像是被切割了, 单独的构建器并不是一个独立的目前对象, 而是这万千
  * 配置器合在一起加上地利人和(打铁自身硬的 {@link B} ) 最后构造了 {@link T} ).
  * 这里将构建策略分解, 可以细化细节, 使得更加灵活的控制每一个节点, 也加入了更多的可能, 细思极恐啊
+ *
+ * 这算是分治思想的一种实现吗 ?
  * </code>
  * @Author ZhouJian
  * @Date 2019-11-29
@@ -38,7 +40,7 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
     private final List<SecurityConfigurer<T, B>> configurersAddedInInitializing = new ArrayList<SecurityConfigurer<T, B>>();
 
     //用于存放一些用于共享实例对象
-    private final Map<Class<? extends Object>, Object> shareObjects = new HashMap<>();
+    private final Map<Class<? extends Object>, Object> sharedObjects = new HashMap<>();
 
     private BuildState buildState = BuildState.UN_BUILT;//默认为未构建状态
 
@@ -91,12 +93,15 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
      *
      *将{@link SecurityConfigurerAdapter}应用于此{@link SecurityBuilder}并调用
      * {@link SecurityConfigurerAdapter＃setBuilder（SecurityBuilder）}
+     *
+     * 注意这里限制了{@link C}的上界为<code> SecurityConfigureAdapter<T, B> </code>,
+     * 界限范围小于另一apply方法, 但是本方法是为了{@link SecurityConfigurerAdapter}量身定做的
      * @param configurer
      * @param <C>
      * @return
      * @throws Exception
      */
-    public <C extends SecurityConfigureAdapter<T, B>> C apply(C configurer) throws Exception{
+    public <C extends SecurityConfigurerAdapter<T, B>> C apply(C configurer) throws Exception{
         configurer.addPostProcessor(objectPostProcessor);
         configurer.setBuilder((B) this);
         add(configurer);
@@ -109,6 +114,8 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
      * are not considered.
      *
      * 将{@link SecurityConfigurer}应用于此{@link SecurityBuilder}，以覆盖完全相同类的任何{@link SecurityConfigurer}。 请注意，不考虑对象层次结构。
+     *
+     * 注意这里限制了{@link C}的上界为<code> SecurityConfigurer<T, B> </code>
      * @param configurer
      * @param <C>
      * @return
@@ -119,8 +126,40 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
         return configurer;
     }
 
-    // TODO: 2019-11-29 顺序往下， 到了 setSharedObject() 
+    /**
+     * 添加共享数据
+     * @param sharedObject
+     * @param object
+     * @param <C>
+     */
+    public <C> void setSharedObject(Class<C> sharedObject, C object){
+        this.sharedObjects.put(sharedObject, object);
+    }
 
+    /**
+     * 根据类型(Class<C> sharedType)获取指定的共享数据
+     * @param sharedType
+     * @param <C>
+     * @return C
+     */
+    public <C> C getSharedObject(Class<C> sharedType){
+        return (C) this.sharedObjects.get(sharedType);
+    }
+
+    /**
+     * 获取共享数据
+     * @return  Map<Class<? extends Object>, Object>
+     */
+    public Map<Class<? extends Object>, Object> getSharedObjects(){
+        return this.sharedObjects;
+    }
+
+    /**
+     * 添加配置器
+     * @param configurer
+     * @param <C>
+     * @throws Exception
+     */
     private <C extends SecurityConfigurer<T, B>> void add(C configurer) throws Exception{
         Assert.notNull(configurer, "configurer is null");
         Class<? extends SecurityConfigurer<T, B>> clazz = (Class<? extends SecurityConfigurer<T, B>>) configurer.getClass();
@@ -143,9 +182,180 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
         }
     }
 
+    /**
+     * 根据clazz类型(Class clazz)查找指定的配置器, 如果配置器缓存中存在待查找对象, 那么会将其返回, 否则返回空List集合
+     * @param clazz
+     * @param <C>
+     * @return List<C>
+     */
+    public <C extends SecurityConfigurer<T, B>> List<C> getConfigurers(Class<C> clazz){
+        List<C> configs = (List<C>) this.configurers.get(clazz);
+        if (configs == null){
+            return Collections.emptyList();
+        }
+        return new ArrayList<>(configs);
+    }
+
+    /**
+     * 根据clazz类型(Class clazz)删除指定的配置器, 如果配置器缓存中存在待删除对象, 那么会将其删除并返回, 否则返回空List集合
+     * 如果{@link #allowConfigurersOfSameType}为true, 那么表示允许存储相同类型的configurer, 删除或获取的返回值需要使用集合类型
+     * @param clazz
+     * @param <C>
+     * @return List<C>
+     */
+    public <C extends SecurityConfigurer<T, B>> List<C> removeConfigurers(Class<C> clazz){
+        List<C> configs = (List<C>) this.configurers.remove(clazz);
+        if (configs == null){
+            return Collections.emptyList();
+        }
+        return new ArrayList<>(configs);
+    }
+
+    /**
+     * 根据clazz类型(Class clazz)查找指定的配置器, 如果配置器缓存中存在待查找对象, 那么会将其返回, 否则返回null
+     * 这里返回的只能存在一个元素
+     * @param clazz
+     * @param <C>
+     * @return C
+     */
+    public <C extends SecurityConfigurer<T, B>> C getConfigurer(Class<C> clazz){
+        List<SecurityConfigurer<T, B>> configs = this.configurers.get(clazz);
+        if (configs == null){
+            return null;
+        }
+        if (configs.size() != 1){
+            throw new IllegalStateException("Only one configurer expected for type " + clazz + ", but got " + configs);
+        }
+        return (C) configs.get(0);
+    }
+
+    /**
+     * 根据clazz类型(Class clazz)删除指定的配置器, 如果配置器缓存中存在待删除对象, 那么会将其删除并返回, 否则返回null
+     * 这里返回的只能存在一个元素
+     * 如果{@link #allowConfigurersOfSameType}为false, 那么表示不允许存储相同类型的configurer, 删除或获取的返回值需要个体元素类型
+     * @param clazz
+     * @param <C>
+     * @return C
+     */
+    public <C extends SecurityConfigurer<T, B>> C removeConfigurer(Class<C> clazz){
+        List<SecurityConfigurer<T, B>> configs = this.configurers.remove(clazz);
+        if (configs == null){
+            return null;
+        }
+        if (configs.size() != 1){
+            throw new IllegalStateException("Only one configurer expected for type " + clazz + ", but got " + configs);
+        }
+        return (C) configs.get(0);
+    }
+
+    /**
+     * 设置后置处理器, 返回当前调用对象
+     * @param objectPostProcessor
+     * @return
+     */
+    public T objectPostProcessor(ObjectPostProcessor<Object> objectPostProcessor){
+        Assert.notNull(objectPostProcessor, "objectPostProcessor cannot be null");
+        this.objectPostProcessor = objectPostProcessor;
+        return (T) this;
+    }
+
+    /**
+     * 后置处理器调用
+     * @param object
+     * @param <P>
+     * @return
+     */
+    protected <P> P postProcess(P object){
+        return this.objectPostProcessor.postProcess(object);
+    }
+
+    /**
+     * boBuild 方法实现
+     * @return
+     * @throws Exception
+     */
     @Override
     protected T doBuild() throws Exception {
-        return null;
+
+        synchronized (configurers){
+            buildState = BuildState.INITIALIZING;
+
+            beforeInit();
+            init();
+
+            buildState = BuildState.CONFIGURING;
+
+            beforeConfigure();
+            configure();
+
+            buildState = BuildState.BUILDING;
+
+            T result = performBuild();
+
+            buildState = BuildState.BUILT;
+
+            return result;
+        }
+    }
+
+    /**
+     * 在init方法之前调用, 目前是一个空实现方法, 子类可以重写进行一些自定义
+     * @throws Exception
+     */
+    protected void beforeInit() throws Exception {
+    }
+
+    /**
+     * 在configure方法之前调用, 目前是一个空实现方法, 子类可以重写进行一些自定义
+     * @throws Exception
+     */
+    protected void beforeConfigure() throws Exception {
+    }
+
+    /**
+     * 构建流程的最后一步, 子类必须实现已完成自己的业务
+     * @return
+     * @throws Exception
+     */
+    protected abstract T performBuild() throws Exception;
+
+
+    /**
+     * 执行每一个配置器的init方法
+     * @throws Exception
+     */
+    private void init() throws Exception {
+        Collection<SecurityConfigurer<T, B>> configurers =getConfigurers();
+        for (SecurityConfigurer<T, B> configurer : configurers){
+            configurer.init((B) this);
+        }
+
+        for (SecurityConfigurer<T, B> configurer : this.configurersAddedInInitializing){
+            configurer.init((B) this);
+        }
+    }
+
+    /**
+     * 执行每一个配置器的configure方法
+     * @throws Exception
+     */
+    private void configure() throws Exception {
+        Collection<SecurityConfigurer<T, B>> configurers = getConfigurers();
+        for (SecurityConfigurer<T, B> configurer : configurers){
+            configurer.configure((B) this);
+        }
+    }
+
+    /**
+     * 获取到所有的配置器集合
+     * @return
+     */
+    private Collection<SecurityConfigurer<T, B>> getConfigurers(){
+        List<SecurityConfigurer<T, B>> result = new ArrayList<>();
+        for (List<SecurityConfigurer<T, B>> configurers : this.configurers.values()){
+            result.addAll(configurers);
+        }
+        return result;
     }
 
     private boolean isUnBuild(){

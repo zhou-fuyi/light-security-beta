@@ -26,8 +26,13 @@ import java.util.List;
  * @Author ZhouJian
  * @Date 2019-11-29
  */
-public abstract class SecurityConfigureAdapter<T, B extends SecurityBuilder<T>> implements SecurityConfigurer<T, B> {
+public abstract class SecurityConfigurerAdapter<T, B extends SecurityBuilder<T>> implements SecurityConfigurer<T, B> {
 
+    /**
+     * 用于存储当前配置器辅助的构建器对象
+     * 其赋值过程可以参见{@link AbstractConfiguredSecurityBuilder#apply(SecurityConfigurerAdapter)},
+     * 就是在这个方法执行过程中设置了{@link #builder}
+     */
     private B builder;
 
     // 后置处理器
