@@ -1,7 +1,6 @@
 package com.light.security.core.config.core.configurer;
 
 import com.light.security.core.authentication.SubjectDetailService;
-import com.light.security.core.authentication.subject.SubjectDetail;
 import com.light.security.core.config.core.ProviderManagerBuilder;
 
 /**

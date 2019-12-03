@@ -4,6 +4,7 @@ import com.light.security.core.authentication.context.SecurityContext;
 import com.light.security.core.authentication.context.holder.HttpRequestResponseHolder;
 import com.light.security.core.authentication.context.holder.SecurityContextHolder;
 import com.light.security.core.authentication.context.repository.SecurityContextRepository;
+import org.springframework.util.Assert;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -27,20 +28,9 @@ public class SecurityContextPretreatmentFilter extends GenericFilter{
     //SecurityContext的数据持有者, 内部解决方案为ThreadLocal
     private SecurityContextHolder securityContextHolder;
 
-    public SecurityContextRepository getSecurityContextRepository() {
-        return securityContextRepository;
-    }
-
-    public void setSecurityContextRepository(SecurityContextRepository securityContextRepository) {
-        this.securityContextRepository = securityContextRepository;
-    }
-
-    public SecurityContextHolder getSecurityContextHolder() {
-        return securityContextHolder;
-    }
-
-    public void setSecurityContextHolder(SecurityContextHolder securityContextHolder) {
-        this.securityContextHolder = securityContextHolder;
+    public SecurityContextPretreatmentFilter(SecurityContextRepository securityContextRepository, SecurityContextHolder securityContextHolder){
+        Assert.isTrue(securityContextRepository == null || securityContextHolder == null,
+                "构造器不接受空值参数 --> securityContextRepository is null or securityContextHolder is null");
     }
 
     @Override

@@ -102,7 +102,7 @@ public abstract class AbstractConfiguredSecurityBuilder<T, B extends SecurityBui
      * @throws Exception
      */
     public <C extends SecurityConfigurerAdapter<T, B>> C apply(C configurer) throws Exception{
-        configurer.addPostProcessor(objectPostProcessor);
+        configurer.addObjectPostProcessor(objectPostProcessor);
         configurer.setBuilder((B) this);
         add(configurer);
         return configurer;

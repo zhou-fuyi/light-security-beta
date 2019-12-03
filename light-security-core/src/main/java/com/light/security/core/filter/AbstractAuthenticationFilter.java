@@ -177,4 +177,8 @@ public abstract class AbstractAuthenticationFilter extends GenericFilter{
         Assert.notNull(authenticationDetailsSource, "authenticationDetailsSource 是必须存在的");
         this.authenticationDetailsSource = authenticationDetailsSource;
     }
+
+    public void setSecurityContextHolder(SecurityContextHolder securityContextHolder) {
+        this.securityContextHolder = securityContextHolder;
+    }
 }

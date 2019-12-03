@@ -175,6 +175,7 @@ public class ExceptionTranslationFilter extends GenericFilter{
     }
 
     public void setAccessDeniedHandler(AccessDeniedHandler accessDeniedHandler) {
+        Assert.notNull(accessDeniedHandler, "AccessDeniedHandler required");
         this.accessDeniedHandler = accessDeniedHandler;
     }
 

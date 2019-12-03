@@ -71,7 +71,7 @@ public abstract class SecurityConfigurerAdapter<T, B extends SecurityBuilder<T>>
      * 添加后置处理器
      * @param objectPostProcessor
      */
-    public void addPostProcessor(ObjectPostProcessor<?> objectPostProcessor){
+    public void addObjectPostProcessor(ObjectPostProcessor<?> objectPostProcessor){
         this.objectPostProcessor.addObjectPostProcessor(objectPostProcessor);
     }
 
@@ -83,7 +83,7 @@ public abstract class SecurityConfigurerAdapter<T, B extends SecurityBuilder<T>>
      * 获取当前类中保存的{@link SecurityBuilder}, 不能为null
      * @return
      */
-    private B getBuilder() {
+    protected B getBuilder() {
         if (builder == null){
             throw new IllegalArgumentException("builder 对象不能为 null");
         }

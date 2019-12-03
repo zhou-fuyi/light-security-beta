@@ -22,8 +22,8 @@ public class UsernamePasswordAuthenticationFilter extends AbstractAuthentication
     public static final String LIGHT_SECURITY_FORM_USERNAME_KEY = "username";
     public static final String LIGHT_SECURITY_FORM_PASSWORD_KEY = "password";
 
-    private String username = LIGHT_SECURITY_FORM_USERNAME_KEY;
-    private String password = LIGHT_SECURITY_FORM_PASSWORD_KEY;
+    private String usernameParameter = LIGHT_SECURITY_FORM_USERNAME_KEY;
+    private String passwordParameter = LIGHT_SECURITY_FORM_PASSWORD_KEY;
     private boolean postOnly = true;
     
     public UsernamePasswordAuthenticationFilter(){
@@ -52,31 +52,31 @@ public class UsernamePasswordAuthenticationFilter extends AbstractAuthentication
     }
 
     protected String obtainUsername(HttpServletRequest request) {
-        return request.getParameter(username);
+        return request.getParameter(usernameParameter);
     }
 
     protected String obtainPassword(HttpServletRequest request){
-        return request.getParameter(password);
+        return request.getParameter(passwordParameter);
     }
 
     protected void setDetail(HttpServletRequest request, UsernamePasswordAuthenticationToken authRequest){
         authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
     }
 
-    public String getUsername() {
-        return username;
+    public String getUsernameParameter() {
+        return usernameParameter;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUsernameParameter(String usernameParameter) {
+        this.usernameParameter = usernameParameter;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPasswordParameter() {
+        return passwordParameter;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPasswordParameter(String passwordParameter) {
+        this.passwordParameter = passwordParameter;
     }
 
     public boolean isPostOnly() {

@@ -94,29 +94,10 @@ public interface FilterChainBuilder<B extends FilterChainBuilder<B>> extends Sec
      *
      * 提供的过滤器的顺序为：
      * <ul>
-     * <li>{@link ChannelProcessingFilter}</li>
-     * <li>{@link ConcurrentSessionFilter}</li>
-     * <li>{@link SecurityContextPersistenceFilter}</li>
-     * <li>{@link LogoutFilter}</li>
-     * <li>{@link X509AuthenticationFilter}</li>
-     * <li>{@link AbstractPreAuthenticatedProcessingFilter}</li>
-     * <li><a href="{@docRoot}/org/springframework/security/cas/web/CasAuthenticationFilter.html">CasAuthenticationFilter</a></li>
-     * <li>{@link UsernamePasswordAuthenticationFilter}</li>
-     * <li>{@link ConcurrentSessionFilter}</li>
-     * <li>{@link OpenIDAuthenticationFilter}</li>
-     * <li>{@link org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter}</li>
-     * <li>{@link ConcurrentSessionFilter}</li>
-     * <li>{@link DigestAuthenticationFilter}</li>
-     * <li>{@link BasicAuthenticationFilter}</li>
-     * <li>{@link RequestCacheAwareFilter}</li>
-     * <li>{@link SecurityContextHolderAwareRequestFilter}</li>
-     * <li>{@link JaasApiIntegrationFilter}</li>
-     * <li>{@link RememberMeAuthenticationFilter}</li>
-     * <li>{@link AnonymousAuthenticationFilter}</li>
-     * <li>{@link SessionManagementFilter}</li>
-     * <li>{@link ExceptionTranslationFilter}</li>
-     * <li>{@link FilterSecurityInterceptor}</li>
-     * <li>{@link SwitchUserFilter}</li>
+     * <li>{@link com.light.security.core.filter.SecurityContextPretreatmentFilter}</li>
+     * <li>{@link com.light.security.core.filter.UsernamePasswordAuthenticationFilter}</li>
+     * <li>{@link com.light.security.core.filter.ExceptionTranslationFilter}</li>
+     * <li>{@link com.light.security.core.filter.FilterSecurityInterceptor}</li>
      * </ul>
      * @param filter
      * @return
