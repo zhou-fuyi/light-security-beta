@@ -10,6 +10,7 @@ import com.light.security.core.config.core.SecurityBuilder;
 import com.light.security.core.config.core.SecurityConfigurerAdapter;
 import com.light.security.core.config.core.configurer.CorsConfigurer;
 import com.light.security.core.config.core.configurer.ExceptionTranslationConfigurer;
+import com.light.security.core.config.core.configurer.FormLoginConfigurer;
 import com.light.security.core.config.core.configurer.SecurityContextConfigurer;
 import com.light.security.core.filter.chain.DefaultSecurityFilterChain;
 import com.light.security.core.util.matcher.*;
@@ -61,6 +62,7 @@ public class HttpSecurityBuilder extends AbstractConfiguredSecurityBuilder<Defau
 
     /**
      * 此时开启的CorsFilter没有配置<code> CorsConfigurationSource </code>
+     *
      * @return
      * @throws Exception
      */
@@ -76,6 +78,16 @@ public class HttpSecurityBuilder extends AbstractConfiguredSecurityBuilder<Defau
      */
     public SecurityContextConfigurer<HttpSecurityBuilder> securityContext(SecurityContextHolder securityContextHolder) throws Exception {
         return getOrApply(new SecurityContextConfigurer<HttpSecurityBuilder>(securityContextHolder));
+    }
+
+    /**
+     * 配置{@link com.light.security.core.filter.UsernamePasswordAuthenticationFilter}过滤器
+     * @param securityContextHolder
+     * @return
+     * @throws Exception
+     */
+    public FormLoginConfigurer<HttpSecurityBuilder> formLogin(SecurityContextHolder securityContextHolder) throws Exception {
+        return getOrApply(new FormLoginConfigurer<HttpSecurityBuilder>(securityContextHolder));
     }
 
     /**
