@@ -1,6 +1,6 @@
 package com.light.security.core.config.annotation;
 
-import org.springframework.boot.autoconfigure.security.servlet.WebSecurityEnablerConfiguration;
+import com.light.security.core.config.configuration.WebSecurityConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 

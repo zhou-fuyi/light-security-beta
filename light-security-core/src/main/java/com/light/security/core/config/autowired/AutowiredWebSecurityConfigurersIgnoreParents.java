@@ -1,4 +1,4 @@
-package com.light.security.core.config.core.autowired;
+package com.light.security.core.config.autowired;
 
 import com.light.security.core.config.core.SecurityConfigurer;
 import com.light.security.core.config.core.WebSecurityConfigurer;

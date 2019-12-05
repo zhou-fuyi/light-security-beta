@@ -1,0 +1,4 @@
+# Auto Configure
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.light.security.core.config.autowired.LightSecurityAutoConfiguration,\
+  com.light.security.core.config.autowired.LightSecurityFilterAutoConfiguration

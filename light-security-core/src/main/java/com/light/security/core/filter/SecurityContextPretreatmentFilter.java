@@ -29,8 +29,10 @@ public class SecurityContextPretreatmentFilter extends GenericFilter{
     private SecurityContextHolder securityContextHolder;
 
     public SecurityContextPretreatmentFilter(SecurityContextRepository securityContextRepository, SecurityContextHolder securityContextHolder){
-        Assert.isTrue(securityContextRepository == null || securityContextHolder == null,
+        Assert.isTrue(securityContextRepository != null && securityContextHolder != null,
                 "构造器不接受空值参数 --> securityContextRepository is null or securityContextHolder is null");
+        this.securityContextRepository = securityContextRepository;
+        this.securityContextHolder = securityContextHolder;
     }
 
     @Override

@@ -108,7 +108,9 @@ public class AuthenticationManagerBuilder extends AbstractConfiguredSecurityBuil
     @Override
     protected AuthenticationManager performBuild() throws Exception {
         if (!isConfigured()){
-            logger.debug("No authenticationProviders and no parentAuthenticationManager defined. Returning null.");
+            if(logger.isDebugEnabled()){
+                logger.debug("No authenticationProviders and no parentAuthenticationManager defined. Returning null.");
+            }
             return null;
         }
         ProviderManager providerManager = new ProviderManager(authenticationProviders, parentAuthenticationManager);

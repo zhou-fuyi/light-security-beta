@@ -40,12 +40,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Import(ObjectPostProcessorConfiguration.class)
 public class AuthenticationConfiguration {
 
+    /**
+     * 标志位, 记录 {@link #authenticationManager} 是否正在构建中
+     */
     private AtomicBoolean buildingAuthenticationManager = new AtomicBoolean();
 
     private ApplicationContext applicationContext;
 
     private AuthenticationManager authenticationManager;
 
+    /**
+     * 标识 {@link #authenticationManager}是否已经构建完成
+     */
     private boolean authenticationManagerInitialized;
 
     private List<GlobalAuthenticationConfigurerAdapter> globalAuthenticationConfigurers = Collections.EMPTY_LIST;
@@ -77,11 +83,17 @@ public class AuthenticationConfiguration {
         return new InitializeAuthenticationProviderBeanManagerConfigurer(context);
     }
 
+    /**
+     * 创建{@link #authenticationManager}
+     *
+     * AuthenticationManager 对象创建流程参考: https://blog.csdn.net/andy_zhang2007/article/details/89885100
+     * @return
+     * @throws Exception
+     */
     public AuthenticationManager getAuthenticationManager() throws Exception{
         if (this.authenticationManagerInitialized){
             return this.authenticationManager;
         }
-        // TODO: 2019-12-03 理解逻辑，执行顺序
         AuthenticationManagerBuilder authenticationManagerBuilder = authenticationManagerBuilder(this.objectPostProcessor);
         if (this.buildingAuthenticationManager.getAndSet(true)){
             return new AuthenticationManagerDelegator(authenticationManagerBuilder);
@@ -119,8 +131,7 @@ public class AuthenticationConfiguration {
     // TODO: 2019-12-03 理解逻辑，执行顺序
     private <T> T lazyBean(Class<T> interfaceName) {
         LazyInitTargetSource lazyTargetSource = new LazyInitTargetSource();
-        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
-                applicationContext, interfaceName);
+        String[] beanNamesForType = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(applicationContext, interfaceName);
         if (beanNamesForType.length == 0) {
             return null;
         }

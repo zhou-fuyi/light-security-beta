@@ -12,6 +12,8 @@ import com.light.security.core.authentication.handler.SimpleAppAuthenticationSuc
 import com.light.security.core.config.core.builder.FilterChainBuilder;
 import com.light.security.core.filter.AbstractAuthenticationFilter;
 import com.light.security.core.util.matcher.RequestMatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -31,6 +33,8 @@ import javax.servlet.http.HttpServletRequest;
  */
 public abstract class AbstractAuthenticationFilterConfigurer<B extends FilterChainBuilder<B>,
         T extends AbstractAuthenticationFilterConfigurer<B, T, F>, F extends AbstractAuthenticationFilter> extends AbstractHttpConfigurer<T, B>{
+
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected static final String DEFAULT_PROCESS_URL = "/login";
     protected static final String DEFAULT_HTTP_METHOD = "POST";
@@ -55,7 +59,7 @@ public abstract class AbstractAuthenticationFilterConfigurer<B extends FilterCha
     private ApplicationEventPublisher eventPublisher;
 
     protected AbstractAuthenticationFilterConfigurer(F authFilter, SecurityContextHolder securityContextHolder, String defaultLoginProcessUrl){
-        Assert.isTrue((authFilter == null || securityContextHolder == null), "构造器不接受空值参数 --> authFilter is null or securityContextHolder is null");
+        Assert.isTrue((authFilter != null && securityContextHolder != null), "构造器不接受空值参数 --> authFilter is null or securityContextHolder is null");
         this.authFilter = authFilter;
         this.securityContextHolder = securityContextHolder;
         if (!StringUtils.isEmpty(defaultLoginProcessUrl)){

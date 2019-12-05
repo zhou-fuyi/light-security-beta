@@ -1,11 +1,12 @@
-package com.light.security.core.config.annotation;
+package com.light.security.core.config.configuration;
 
 import com.light.security.core.config.AbstractSecurityWebApplicationInitializer;
 import com.light.security.core.config.core.ObjectPostProcessor;
 import com.light.security.core.config.core.SecurityConfigurer;
-import com.light.security.core.config.core.autowired.AutowiredWebSecurityConfigurersIgnoreParents;
+import com.light.security.core.config.autowired.AutowiredWebSecurityConfigurersIgnoreParents;
 import com.light.security.core.config.core.builder.ChainProxyBuilder;
 import com.light.security.core.config.core.configurer.WebSecurityConfigurerAdapter;
+import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -28,7 +29,7 @@ import java.util.List;
  * @Date 2019-12-04
  */
 @Configuration
-public class WebSecurityConfiguration {
+public class WebSecurityConfiguration implements BeanClassLoaderAware {
 
     private ChainProxyBuilder chainProxyBuilder;
 
@@ -50,6 +51,7 @@ public class WebSecurityConfiguration {
     }
 
     /**
+     * 核心方法
      * 创建并启动{@link com.light.security.core.filter.FilterChainProxy}
      * @return
      * @throws Exception
@@ -143,4 +145,7 @@ public class WebSecurityConfiguration {
         }
     }
 
+    public void setBeanClassLoader(ClassLoader beanClassLoader) {
+        this.beanClassLoader = beanClassLoader;
+    }
 }

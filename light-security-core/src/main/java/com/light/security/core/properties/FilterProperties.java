@@ -8,6 +8,8 @@ package com.light.security.core.properties;
  */
 public class FilterProperties {
 
+    private DelegatingFilterProxyProperties proxy = new DelegatingFilterProxyProperties();
+
     /**
      * 门户预处理过滤器配置
      */
@@ -30,6 +32,14 @@ public class FilterProperties {
     private AuthorizationFilterProperties authorization = new AuthorizationFilterProperties();
 
     public FilterProperties() {
+    }
+
+    public DelegatingFilterProxyProperties getProxy() {
+        return proxy;
+    }
+
+    public void setProxy(DelegatingFilterProxyProperties proxy) {
+        this.proxy = proxy;
     }
 
     public PretreatmentFilterProperties getPretreatment() {

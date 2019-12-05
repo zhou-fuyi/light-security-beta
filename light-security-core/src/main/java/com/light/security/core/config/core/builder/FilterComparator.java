@@ -4,6 +4,7 @@ import com.light.security.core.filter.ExceptionTranslationFilter;
 import com.light.security.core.filter.FilterSecurityInterceptor;
 import com.light.security.core.filter.SecurityContextPretreatmentFilter;
 import com.light.security.core.filter.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.CorsFilter;
 
 import javax.servlet.Filter;
 import java.io.Serializable;
@@ -24,6 +25,8 @@ final class FilterComparator implements Comparator<Filter>, Serializable {
 
     FilterComparator(){
         int order = 100;
+        put(CorsFilter.class, order);
+        order += STEP;
         put(SecurityContextPretreatmentFilter.class, order);
         order += STEP;
         put(UsernamePasswordAuthenticationFilter.class, order);
