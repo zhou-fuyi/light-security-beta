@@ -4,7 +4,7 @@ import com.light.security.core.access.model.Authority;
 
 /**
  * @ClassName DefaultGrantedAuthority
- * @Description TODO
+ * @Description 已授予权限的默认实现
  * @Author ZhouJian
  * @Date 2019-11-21
  */

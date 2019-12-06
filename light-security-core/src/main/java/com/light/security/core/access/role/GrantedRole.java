@@ -22,12 +22,12 @@ public interface GrantedRole {
      * 获取当前角色已经被授予的权限集合
      * @return
      */
-    Collection<? extends GrantedAuthority> getGrantedAuthorities();
+    Collection<GrantedAuthority> getGrantedAuthorities();
 
     /**
      * 获取当前角色持有的Action权限, 即API访问权限
      * @return
      */
-    Collection<? extends GrantedAuthority> findActionAuthorities();
+    Collection<GrantedAuthority> findActionAuthorities();
 
 }

@@ -23,7 +23,7 @@ public class DaoAuthenticationProvider extends AbstractSubjectDetailAuthenticati
 
     private PasswordEncoder passwordEncoder;
 
-    private String subjectNotFoundPassword;
+//    private String subjectNotFoundPassword;
 
     private SubjectDetailService subjectDetailService;
 
@@ -47,6 +47,7 @@ public class DaoAuthenticationProvider extends AbstractSubjectDetailAuthenticati
     @Override
     protected void doAfterPropertiesSet() {
         Assert.notNull(subjectDetailService, "SubjectDetailService 不能为null");
+        Assert.notNull(passwordEncoder, "PasswordEncoder 不能为null");
     }
 
     @Override
@@ -71,7 +72,7 @@ public class DaoAuthenticationProvider extends AbstractSubjectDetailAuthenticati
 
     public void setPasswordEncoder(PasswordEncoder passwordEncoder){
         Assert.notNull(passwordEncoder, "PasswordEncoder 不能为null");
-        this.subjectNotFoundPassword = passwordEncoder.encode(SUBJECT_NOT_FOUND_PASSWORD);
+//        this.subjectNotFoundPassword = passwordEncoder.encode(SUBJECT_NOT_FOUND_PASSWORD);
         this.passwordEncoder = passwordEncoder;
     }
 

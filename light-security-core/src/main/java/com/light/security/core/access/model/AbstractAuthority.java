@@ -1,5 +1,6 @@
 package com.light.security.core.access.model;
 
+import com.light.security.core.access.model.base.BaseEntity;
 import com.light.security.core.access.model.tree.builder.TreeBuilderConstant;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -14,11 +15,10 @@ import org.springframework.util.StringUtils;
  * @Author ZhouJian
  * @Date 2019-11-20
  */
-public abstract class AbstractAuthority implements Authority{
+public abstract class AbstractAuthority extends BaseEntity implements Authority{
 
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Integer id;
     private Integer parentId;
     private String type;
     private String name;
@@ -42,14 +42,6 @@ public abstract class AbstractAuthority implements Authority{
         this.desc = builder.desc;
         this.enabled = builder.enabled;
         this.open = builder.open;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public Integer getParentId() {
@@ -139,7 +131,7 @@ public abstract class AbstractAuthority implements Authority{
         setParentId(parentId);
     }
 
-    public static abstract class Builder{
+    public static abstract class Builder extends BaseEntity.AbstractBaseBuilder{
 
         private Integer id;//必传参数
         private String code;
@@ -152,6 +144,7 @@ public abstract class AbstractAuthority implements Authority{
         private boolean open;
 
         public Builder(Integer authorityId, String code){
+            super(authorityId);
             if (authorityId == null || StringUtils.isEmpty(code)){
                 throw new IllegalArgumentException("构造器不接受空值参数 --> authorityId is null or ( code is null or '' )");
             }
@@ -197,7 +190,6 @@ public abstract class AbstractAuthority implements Authority{
             return this;
         }
 
-        public abstract AbstractAuthority build();
     }
 
     @Override

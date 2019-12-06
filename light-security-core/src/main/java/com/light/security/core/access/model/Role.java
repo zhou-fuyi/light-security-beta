@@ -4,7 +4,7 @@ import java.util.Collection;
 
 /**
  * @InterfaceName Role
- * @Description TODO
+ * @Description 对应数据库中角色实体
  * @Author ZhouJian
  * @Date 2019-11-19
  */
