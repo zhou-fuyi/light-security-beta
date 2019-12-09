@@ -13,6 +13,8 @@ import java.util.Collection;
  */
 public interface SubjectDetail extends Serializable {
 
+    Object getKey();
+
     /**
      * 获取账户持有的角色集合
      * @return

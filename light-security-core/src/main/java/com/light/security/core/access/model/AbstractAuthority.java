@@ -25,7 +25,7 @@ public abstract class AbstractAuthority extends BaseEntity implements Authority{
     private String code;
     private String desc;
     private boolean enabled;
-    private boolean open;
+    private boolean opened;
 
     protected AbstractAuthority(){
         if (logger.isDebugEnabled()){
@@ -41,7 +41,7 @@ public abstract class AbstractAuthority extends BaseEntity implements Authority{
         this.code = builder.code;
         this.desc = builder.desc;
         this.enabled = builder.enabled;
-        this.open = builder.open;
+        this.opened = builder.open;
     }
 
     public Integer getParentId() {
@@ -94,12 +94,12 @@ public abstract class AbstractAuthority extends BaseEntity implements Authority{
         this.enabled = enabled;
     }
 
-    public boolean isOpen() {
-        return open;
+    public boolean isOpened() {
+        return opened;
     }
 
-    public void setOpen(boolean open) {
-        this.open = open;
+    public void setOpened(boolean opened) {
+        this.opened = opened;
     }
 
     @Override

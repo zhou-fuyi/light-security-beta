@@ -18,7 +18,7 @@ public interface Authority {
      * 当前权限是否为公共资源
      * @return
      */
-    boolean isOpen();
+    boolean isOpened();
 
     /**
      * 获取权限类型

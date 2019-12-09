@@ -1,8 +1,10 @@
 package com.light.security.core.properties;
 
+import com.light.security.core.constant.AuthTypeEnum;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -13,6 +15,11 @@ import java.util.List;
  */
 @ConfigurationProperties(prefix = "light.security")
 public class SecurityProperties {
+
+    /**
+     * 默认使用简易模式
+     */
+    private Enum authType = Enum.valueOf(AuthTypeEnum.class, AuthTypeEnum.SIMPLE.name());
 
     /**
      * 过滤器配置
@@ -27,6 +34,14 @@ public class SecurityProperties {
     private List<String> ignored = new ArrayList<>();
 
     public SecurityProperties() {
+    }
+
+    public Enum getAuthType() {
+        return authType;
+    }
+
+    public void setAuthType(Enum authType) {
+        this.authType = authType;
     }
 
     public FilterProperties getFilter() {
