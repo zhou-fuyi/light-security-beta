@@ -28,7 +28,7 @@ public class ElementAuthorityTreeBuilder extends AbstractAuthorityTreeBuilder {
                 .name(element.getName())
                 .code(element.getCode())
                 .enabled(element.isEnabled())
-                .open(element.isOpen())
+                .open(element.isOpened())
                 .children(children)
                 .build();
         return elementTree;

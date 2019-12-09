@@ -28,7 +28,7 @@ public class MenuAuthorityTreeBuilder extends AbstractAuthorityTreeBuilder {
                 .name(menu.getName())
                 .code(menu.getCode())
                 .enabled(menu.isEnabled())
-                .open(menu.isOpen())
+                .open(menu.isOpened())
                 .children(children)
                 .build();
         return menuTree;

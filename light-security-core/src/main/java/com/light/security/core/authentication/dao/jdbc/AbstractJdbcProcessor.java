@@ -1,15 +1,19 @@
 package com.light.security.core.authentication.dao.jdbc;
 
 import com.light.security.core.access.role.GrantedRole;
+import com.light.security.core.authentication.SubjectDetailService;
 import com.light.security.core.authentication.subject.Subject;
 import com.light.security.core.authentication.subject.SubjectDetail;
+import com.light.security.core.exception.InternalAuthenticationServiceException;
 import com.light.security.core.exception.SubjectNameNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -19,7 +23,7 @@ import java.util.List;
 
 /**
  * @ClassName AbstractJdbcProcessor
- * @Description TODO
+ * @Description {@link JdbcDaoProcessor}的抽象实现, 在本实现中完成了{@link #loadSubjectBySubjectName(String)}方法, 获取账户的方法
  * @Author ZhouJian
  * @Date 2019-12-09
  */
@@ -70,8 +74,16 @@ public abstract class AbstractJdbcProcessor extends JdbcDaoSupport implements Jd
         return new Subject(query.getKey(), query.getSubjectName(), query.getPassword(), query.isEnabled(), true, true, true, roles);
     }
 
-    @Override
-    public List<SubjectDetail> loadSubjectsBySubjectName(String subjectName) throws SubjectNameNotFoundException {
+    /**
+     * 该方法不同于{@link SubjectDetailService#loadSubjectBySubjectName(String)},
+     * 该方法直接与数据库进行交互, 是<code> SubjectDetailService </code>接口中方法的数据库实现,
+     * 在此方法中没有在数据返回的同时直接查询权限数据, 原因是避免多余的执行(如果当前的返回为空, 那么会造成NPE问题),
+     * 虽然也可以先判断进行问题避免, 但是考虑到尽量让方法的职责边界明显, 所以将权限的加载放到了{@link SubjectDetailService#loadSubjectBySubjectName(String)}
+     * 方法的实现中
+     * @param subjectName
+     * @return
+     */
+    protected List<SubjectDetail> loadSubjectsBySubjectName(String subjectName) throws SubjectNameNotFoundException {
         return getJdbcTemplate().query(JdbcQuery.getQuery(JdbcQuery.QueryKey.DEF_SUBJECTS_BY_SUBJECT_NAME_QUERY.name()),
                 new String[]{subjectName}, new RowMapper<SubjectDetail>() {
                     @Override
@@ -83,5 +95,28 @@ public abstract class AbstractJdbcProcessor extends JdbcDaoSupport implements Jd
                         return new Subject(id, subjectName, password, enabled, true, true, true, Collections.EMPTY_LIST);
                     }
                 });
+    }
+
+    @Override
+    public Collection<GrantedRole> loadGroupAuthorities(Integer subjectId) {
+        if (logger.isDebugEnabled()){
+            logger.debug("暂时不支持组概念");
+        }
+        throw new InternalAuthenticationServiceException(500, "暂时不支持组概念");
+    }
+
+    @Override
+    public void autoInitTable() throws Exception {
+        if (logger.isDebugEnabled()){
+            logger.debug("do nothing");
+        }
+    }
+
+    protected void createTable(String filename) throws Exception {
+        String currentPath = getClass().getResource("").getPath();
+        if (StringUtils.isEmpty(filename)){
+            throw new IllegalAccessException("参数异常 --> filename is empty");
+        }
+        // TODO: 2019/12/9 完成文件读写然后创建表 
     }
 }

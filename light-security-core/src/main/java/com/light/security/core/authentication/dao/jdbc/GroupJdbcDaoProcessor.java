@@ -6,22 +6,20 @@ import com.light.security.core.constant.AuthTypeEnum;
 import java.util.Collection;
 
 /**
- * @ClassName SimpleJdbcDaoProcessor
- * @Description 适用于简单模式 {@link AuthTypeEnum#SIMPLE}下的账户查询
+ * @ClassName GroupJdbcDaoProcessor
+ * @Description 适用于组概念模式 {@link AuthTypeEnum#GROUP}下的账户查询
  * @Author ZhouJian
  * @Date 2019-12-09
  */
-public class SimpleJdbcDaoProcessor extends AbstractJdbcProcessor{
-
+public class GroupJdbcDaoProcessor extends AbstractJdbcProcessor {
     @Override
     public Collection<GrantedRole> loadSubjectAuthorities(Integer subjectId) {
-
         return null;
     }
 
+
     @Override
     public boolean support(Enum authType) {
-        return authType.name().equals(AuthTypeEnum.SIMPLE.name());
+        return authType.name().equals(AuthTypeEnum.GROUP.name());
     }
-
 }

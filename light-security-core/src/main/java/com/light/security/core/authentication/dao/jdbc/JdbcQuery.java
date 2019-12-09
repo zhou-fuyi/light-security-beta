@@ -74,7 +74,7 @@ public class JdbcQuery implements InitializingBean {
             " left join menu c on b.menu_id = c.id";
 
     private final static String ADVANCE_DEF_ELEMENT_AUTHORITIES_QUERY = "select" +
-            "  a.type type\n" +
+            "  a.type type" +
             " , c.id id, c.parent_id parentId, c.element_code `code`, c.element_name `name`" +
             " , c.element_desc `desc`, c.enabled enabled, c.opened opened" +
             " from (select * from authority where id in ?) a" +
