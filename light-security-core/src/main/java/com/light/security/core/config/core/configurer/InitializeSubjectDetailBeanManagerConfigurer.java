@@ -76,6 +76,9 @@ public class InitializeSubjectDetailBeanManagerConfigurer extends GlobalAuthenti
         private <T> T getBeanOrNull(Class<T> type) {
             String[] userDetailsBeanNames = InitializeSubjectDetailBeanManagerConfigurer.this.context
                     .getBeanNamesForType(type);
+            /**
+             * 如果数量不等于1 返回null
+             */
             if (userDetailsBeanNames.length != 1) {
                 return null;
             }

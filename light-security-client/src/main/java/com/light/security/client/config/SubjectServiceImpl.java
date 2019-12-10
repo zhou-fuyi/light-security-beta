@@ -1,12 +1,12 @@
 package com.light.security.client.config;
 
-import com.light.security.core.access.role.GrantedRole;
 import com.light.security.core.authentication.SubjectDetailService;
+import com.light.security.core.authentication.dao.jdbc.JdbcDaoProcessorManager;
 import com.light.security.core.authentication.subject.SubjectDetail;
 import com.light.security.core.exception.SubjectNameNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Collection;
 
 
 /**
@@ -17,43 +17,13 @@ import java.util.Collection;
  */
 @Configuration
 public class SubjectServiceImpl implements SubjectDetailService {
+
+    @Autowired
+    private JdbcDaoProcessorManager jdbcDaoProcessorManager;
+
     @Override
     public SubjectDetail loadSubjectBySubjectName(String subjectName) throws SubjectNameNotFoundException {
-        return new SubjectDetail() {
-            @Override
-            public Collection<? extends GrantedRole> getRoles() {
-                return null;
-            }
 
-            @Override
-            public String getPassword() {
-                return null;
-            }
-
-            @Override
-            public String getSubjectName() {
-                return null;
-            }
-
-            @Override
-            public boolean isAccountNonExpired() {
-                return false;
-            }
-
-            @Override
-            public boolean isAccountNonLocked() {
-                return false;
-            }
-
-            @Override
-            public boolean isCredentialsNonExpired() {
-                return false;
-            }
-
-            @Override
-            public boolean isEnabled() {
-                return false;
-            }
-        };
+        return jdbcDaoProcessorManager.loadSubjectBySubjectName(subjectName);
     }
 }

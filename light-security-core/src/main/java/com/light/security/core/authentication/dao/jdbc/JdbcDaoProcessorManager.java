@@ -1,11 +1,12 @@
 package com.light.security.core.authentication.dao.jdbc;
 
-import com.light.security.core.authentication.SubjectDetailService;
 import com.light.security.core.authentication.subject.SubjectDetail;
-import com.light.security.core.exception.AuthenticationException;
+import com.light.security.core.exception.InternalServiceException;
 import com.light.security.core.exception.ProcessorNotFoundException;
 import com.light.security.core.exception.SubjectNameNotFoundException;
 import com.light.security.core.properties.SecurityProperties;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -21,7 +22,7 @@ import java.util.List;
  * @Author ZhouJian
  * @Date 2019-12-09
  */
-public class JdbcDaoProcessorManager implements SubjectDetailService, InitializingBean {
+public class JdbcDaoProcessorManager implements DaoProcessorManager, InitializingBean {
 
     private final static Logger logger = LoggerFactory.getLogger(JdbcDaoProcessorManager.class);
 
@@ -35,6 +36,15 @@ public class JdbcDaoProcessorManager implements SubjectDetailService, Initializi
 
     private boolean autoCreateTableOnStartup;
 
+    public JdbcDaoProcessor getCurrentProcessor() {
+        return currentProcessor;
+    }
+
+    public void setCurrentProcessor(JdbcDaoProcessor currentProcessor) {
+        this.currentProcessor = currentProcessor;
+    }
+
+    // TODO: 2019-12-10 代码需要改造
     @Override
     public SubjectDetail loadSubjectBySubjectName(String subjectName) throws SubjectNameNotFoundException {
         Enum currentAuthType = securityProperties.getAuthType();
@@ -58,6 +68,11 @@ public class JdbcDaoProcessorManager implements SubjectDetailService, Initializi
                     if (logger.isDebugEnabled()){
                         logger.debug("异常: {}", ex.getMessage());
                     }
+                    lastException = ex;
+                }catch (InternalServiceException ex){
+                    if (logger.isDebugEnabled()){
+                        logger.debug("异常: {}", ex.getMessage());
+                    }
                     throw ex;
                 }catch (RuntimeException ex){
                     lastException = ex;
@@ -71,6 +86,11 @@ public class JdbcDaoProcessorManager implements SubjectDetailService, Initializi
                     logger.debug("异常: {}", ex.getMessage());
                 }
                 throw ex;
+            }catch (InternalServiceException ex){
+                if (logger.isDebugEnabled()){
+                    logger.debug("异常: {}", ex.getMessage());
+                }
+                lastException = ex;
             }catch (RuntimeException ex){
                 lastException = ex;
             }
@@ -88,6 +108,7 @@ public class JdbcDaoProcessorManager implements SubjectDetailService, Initializi
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        logger.info(ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE));
         Assert.notNull(securityProperties, "securityProperties 不能为null");
         Assert.notNull(jdbcDaoProcessors, "jdbcDaoProcessors 不能为null");
         /**
@@ -98,7 +119,7 @@ public class JdbcDaoProcessorManager implements SubjectDetailService, Initializi
             for (JdbcDaoProcessor processor : jdbcDaoProcessors){
                 if (processor.support(currentAuthType)){
                     this.currentProcessor = processor;
-                    processor.autoInitTable();
+                    processor.autoInitTable(currentAuthType);
                     break;
                 }
             }

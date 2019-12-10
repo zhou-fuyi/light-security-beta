@@ -33,7 +33,7 @@ import java.util.List;
 @Configuration
 @ConditionalOnClass({AuthenticationManager.class, GlobalAuthenticationConfigurerAdapter.class})
 @Import({SpringBootWebSecurityConfiguration.class, AuthenticationManagerConfiguration.class})
-@EnableConfigurationProperties(SecurityProperties.class) // 开启<code> ConfigurationProperties </code>支持
+@EnableConfigurationProperties
 public class LightSecurityAutoConfiguration {
 
     /**
@@ -43,7 +43,8 @@ public class LightSecurityAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean(SecurityProperties.class)// 仅仅在当前上下文中不存在某个类型的实例时, 才会实例化一个Bean
     public SecurityProperties securityProperties(){
-        return new SecurityProperties();
+        SecurityProperties securityProperties = new SecurityProperties();
+        return securityProperties;
     }
 
     /**

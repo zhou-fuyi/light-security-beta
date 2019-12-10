@@ -1,12 +1,11 @@
 package com.light.security.core.authentication.dao.jdbc;
 
 import com.light.security.core.access.role.GrantedRole;
-import com.light.security.core.authentication.SubjectDetailService;
 import com.light.security.core.authentication.subject.SubjectDetail;
-import org.springframework.beans.factory.InitializingBean;
+import com.light.security.core.exception.AuthenticationException;
+import com.light.security.core.exception.SubjectNameNotFoundException;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * @InterfaceName JdbcDaoProcessor
@@ -14,7 +13,9 @@ import java.util.List;
  * @Author ZhouJian
  * @Date 2019-12-09
  */
-public interface JdbcDaoProcessor extends SubjectDetailService{
+public interface JdbcDaoProcessor {
+
+    SubjectDetail loadSubjectBySubjectName(String subjectName) throws AuthenticationException;
 
     /**
      * 根据给定数据创建一个返回的{@link SubjectDetail}
@@ -33,7 +34,7 @@ public interface JdbcDaoProcessor extends SubjectDetailService{
      * @param subjectId
      * @return
      */
-    Collection<GrantedRole> loadSubjectAuthorities(Integer subjectId);
+    Collection<GrantedRole> loadSubjectAuthorities(Integer subjectId) throws Exception;
 
 
     /**
@@ -47,7 +48,7 @@ public interface JdbcDaoProcessor extends SubjectDetailService{
     /**
      * 可以实现该方法, 用于创建表
      */
-    void autoInitTable() throws Exception ;
+    void autoInitTable(Enum authType) throws Exception ;
 
     boolean support(Enum authType);
 }

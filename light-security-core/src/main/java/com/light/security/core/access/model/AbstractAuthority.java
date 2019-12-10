@@ -41,7 +41,7 @@ public abstract class AbstractAuthority extends BaseEntity implements Authority{
         this.code = builder.code;
         this.desc = builder.desc;
         this.enabled = builder.enabled;
-        this.opened = builder.open;
+        this.opened = builder.opened;
     }
 
     public Integer getParentId() {
@@ -141,7 +141,7 @@ public abstract class AbstractAuthority extends BaseEntity implements Authority{
         private String name;
         private String desc;
         private boolean enabled;
-        private boolean open;
+        private boolean opened;
 
         public Builder(Integer authorityId, String code){
             super(authorityId);
@@ -185,8 +185,8 @@ public abstract class AbstractAuthority extends BaseEntity implements Authority{
             return this;
         }
 
-        public Builder open(boolean open){
-            this.open = open;
+        public Builder opened(boolean opened){
+            this.opened = opened;
             return this;
         }
 

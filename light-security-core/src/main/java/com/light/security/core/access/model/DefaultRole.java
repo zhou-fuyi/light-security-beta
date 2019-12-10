@@ -10,6 +10,7 @@ import java.util.Collection;
  */
 public class DefaultRole extends AbstractRole{
 
+    public DefaultRole(){}
 
     public DefaultRole(Builder builder) {
         super(builder);

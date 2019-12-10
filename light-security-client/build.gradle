@@ -2,4 +2,5 @@
 dependencies {
     compile project(':light-security-browser')
     compile project(':light-security-app')
+    compile "${rootProject.ext.dependencies.mysql}"
 }

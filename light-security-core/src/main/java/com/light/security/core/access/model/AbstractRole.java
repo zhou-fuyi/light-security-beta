@@ -25,6 +25,8 @@ public abstract class AbstractRole extends BaseEntity implements Role {
     private String roleDesc;
     private Collection<Authority> authorities;
 
+    protected AbstractRole(){}
+
     public AbstractRole (Builder builder){
         this.id = builder.getId();
         this.roleName = builder.roleName;
@@ -67,6 +69,21 @@ public abstract class AbstractRole extends BaseEntity implements Role {
     @Override
     public String getRoleName() {
         return roleName;
+    }
+
+    @Override
+    public Integer getKey() {
+        return this.id;
+    }
+
+    @Override
+    public void addAuthority(Authority authority) {
+        this.authorities.add(authority);
+    }
+
+    @Override
+    public void addAuthorities(Collection<? extends Authority> authorities) {
+        this.authorities.addAll(authorities);
     }
 
     public abstract static class Builder extends BaseEntity.AbstractBaseBuilder{

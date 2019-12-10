@@ -13,4 +13,10 @@ public interface Role {
     Collection<? extends Authority> getAuthorities();
 
     String getRoleName();
+
+    Integer getKey();
+
+    void addAuthority(Authority authority);
+
+    void addAuthorities(Collection<? extends Authority> authorities);
 }

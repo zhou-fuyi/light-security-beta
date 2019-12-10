@@ -16,10 +16,12 @@ import java.util.List;
 @ConfigurationProperties(prefix = "light.security")
 public class SecurityProperties {
 
+    private String name;
+
     /**
      * 默认使用简易模式
      */
-    private Enum authType = Enum.valueOf(AuthTypeEnum.class, AuthTypeEnum.SIMPLE.name());
+    private AuthTypeEnum authType = AuthTypeEnum.SIMPLE;
 
     /**
      * 过滤器配置
@@ -36,11 +38,19 @@ public class SecurityProperties {
     public SecurityProperties() {
     }
 
-    public Enum getAuthType() {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public AuthTypeEnum getAuthType() {
         return authType;
     }
 
-    public void setAuthType(Enum authType) {
+    public void setAuthType(AuthTypeEnum authType) {
         this.authType = authType;
     }
 
