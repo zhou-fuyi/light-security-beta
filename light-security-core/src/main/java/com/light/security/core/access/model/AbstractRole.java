@@ -57,10 +57,6 @@ public abstract class AbstractRole extends BaseEntity implements Role {
         this.roleDesc = roleDesc;
     }
 
-    public void setAuthorities(Collection<Authority> authorities) {
-        this.authorities = authorities;
-    }
-
     @Override
     public Collection<? extends Authority> getAuthorities() {
         return Collections.unmodifiableCollection(authorities);
@@ -82,8 +78,13 @@ public abstract class AbstractRole extends BaseEntity implements Role {
     }
 
     @Override
-    public void addAuthorities(Collection<? extends Authority> authorities) {
+    public void addAuthorities(Collection<Authority> authorities) {
         this.authorities.addAll(authorities);
+    }
+
+    @Override
+    public void setAuthorities(Collection<Authority> authorities) {
+        this.authorities = authorities;
     }
 
     public abstract static class Builder extends BaseEntity.AbstractBaseBuilder{

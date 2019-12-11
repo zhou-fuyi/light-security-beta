@@ -18,5 +18,7 @@ public interface Role {
 
     void addAuthority(Authority authority);
 
-    void addAuthorities(Collection<? extends Authority> authorities);
+    void addAuthorities(Collection<Authority> authorities);
+
+    void setAuthorities(Collection<Authority> authorities);
 }

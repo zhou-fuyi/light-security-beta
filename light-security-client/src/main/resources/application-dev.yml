@@ -11,5 +11,4 @@ spring:
 
 light:
   security:
-    name:
-      123
+    auth-type: advance

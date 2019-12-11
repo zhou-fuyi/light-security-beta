@@ -1,9 +1,8 @@
 package com.light.security.core.authentication.dao.jdbc;
 
 import com.light.security.core.access.model.*;
-import com.light.security.core.access.model.base.BaseEntity;
 import com.light.security.core.access.role.GrantedRole;
-import com.light.security.core.constant.AuthTypeEnum;
+import com.light.security.core.properties.SecurityProperties;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.util.StringUtils;
 
@@ -16,7 +15,7 @@ import java.util.List;
 
 /**
  * @ClassName SimpleJdbcDaoProcessor
- * @Description 适用于简单模式 {@link AuthTypeEnum#SIMPLE}下的账户查询
+ * @Description 适用于简单模式 {@link com.light.security.core.properties.SecurityProperties.AuthTypeEnum#SIMPLE}下的账户查询
  * @Author ZhouJian
  * @Date 2019-12-09
  */
@@ -24,10 +23,14 @@ public class SimpleJdbcDaoProcessor extends AbstractJdbcProcessor{
 
     private static final String SIMPLE_DDL_QUERY_FILENAME = "light-security-simple.ddl";
 
+    public SimpleJdbcDaoProcessor(){
+        setDdlQueryFilename(SIMPLE_DDL_QUERY_FILENAME);
+    }
+
     @Override
     public Collection<GrantedRole> loadSubjectAuthorities(Integer subjectId) throws Exception{
 
-        getJdbcTemplate().query(JdbcQuery.getQuery(JdbcQuery.QueryKey.DEF_AUTHORITIES_BY_SUBJECT_ID_QUERY.name())
+        return getJdbcTemplate().query(JdbcQuery.getQuery(JdbcQuery.QueryKey.DEF_AUTHORITIES_BY_SUBJECT_ID_QUERY.name())
                 , new Object[]{subjectId}
                 , (ResultSetExtractor<Collection<GrantedRole>>) rs -> {
                     List<Role> roles = new ArrayList<>();
@@ -36,18 +39,17 @@ public class SimpleJdbcDaoProcessor extends AbstractJdbcProcessor{
                     }
                     return comparatorAndTransformToGrantedRoleList(roles);
                 });
-        return null;
     }
 
     @Override
     public boolean support(Enum authType) {
-        return authType.name().equals(AuthTypeEnum.SIMPLE.name());
+        return authType.name().equals(SecurityProperties.AuthTypeEnum.SIMPLE.name());
     }
 
     @Override
     public void autoInitTable(Enum authType) throws Exception {
 //        createTable(SIMPLE_DDL_QUERY_FILENAME, authType);
-        createTableWithSqlFile(SIMPLE_DDL_QUERY_FILENAME, authType);
+        createTableWithSqlFile(authType);
     }
 
     private Role loadRole(ResultSet rs) throws SQLException {
@@ -98,5 +100,13 @@ public class SimpleJdbcDaoProcessor extends AbstractJdbcProcessor{
          */
         Role role = new DefaultRole.Builder(rs.getInt("authId"), rs.getString("code"), Arrays.asList(authority)).build();
         return role;
+    }
+
+    @Override
+    public void setEnabledGroups(boolean enabledGroups) {
+        if (enabledGroups){
+            throw new IllegalArgumentException("本处理器不支持组概念内容");
+        }
+        super.setEnabledGroups(false);
     }
 }

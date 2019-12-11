@@ -1,5 +1,6 @@
 package com.light.security.core.authentication.dao.jdbc;
 
+import com.light.security.core.access.model.Authority;
 import com.light.security.core.access.model.Role;
 import com.light.security.core.access.role.DefaultGrantRole;
 import com.light.security.core.access.role.GrantedRole;
@@ -15,6 +16,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.support.EncodedResource;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -22,11 +24,9 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.*;
 
 /**
@@ -38,11 +38,54 @@ import java.util.*;
 public abstract class AbstractJdbcProcessor extends JdbcDaoSupport implements JdbcDaoProcessor {
 
     private static final String DEFAULT_DDL_FILE_PREFIX = "support/ddl/";
+    private static final String SEPARATOR = ";";
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     private boolean enabledAuthorities = true;
     private boolean enabledGroups;
     private String ddlFilePrefix = DEFAULT_DDL_FILE_PREFIX;
+    private String separator = SEPARATOR;
+    private String ddlQueryFilename;
+
+    public boolean isEnabledAuthorities() {
+        return enabledAuthorities;
+    }
+
+    public void setEnabledAuthorities(boolean enabledAuthorities) {
+        this.enabledAuthorities = enabledAuthorities;
+    }
+
+    public boolean isEnabledGroups() {
+        return enabledGroups;
+    }
+
+    public void setEnabledGroups(boolean enabledGroups) {
+        this.enabledGroups = enabledGroups;
+    }
+
+    public String getDdlFilePrefix() {
+        return ddlFilePrefix;
+    }
+
+    public void setDdlFilePrefix(String ddlFilePrefix) {
+        this.ddlFilePrefix = ddlFilePrefix;
+    }
+
+    public String getSeparator() {
+        return separator;
+    }
+
+    public void setSeparator(String separator) {
+        this.separator = separator;
+    }
+
+    public String getDdlQueryFilename() {
+        return ddlQueryFilename;
+    }
+
+    public void setDdlQueryFilename(String ddlQueryFilename) {
+        this.ddlQueryFilename = ddlQueryFilename;
+    }
 
     @Override
     public SubjectDetail loadSubjectBySubjectName(String subjectName) throws AuthenticationException {
@@ -130,52 +173,38 @@ public abstract class AbstractJdbcProcessor extends JdbcDaoSupport implements Jd
     }
 
     /**
-     * 根据给定文件名读取文件进行表的创建, 子类可以重写该方法实现自己的逻辑
+     * 创建表, 但是只支持单条sql, 因为不管你传入多少条, 我只执行第一条
+     * (只执行第一条是{@link org.springframework.jdbc.core.JdbcTemplate}的默认行为)
+     * 我将使用 ";"作为分隔点进行分隔, 限制只能传入一条SQL
+     * @param singleSql
+     * @throws Exception
+     */
+    protected void createTableWithSingleQuery(String singleSql) throws Exception {
+        singleSql = singleSql.trim();
+        final boolean debug = logger.isDebugEnabled();
+        if (StringUtils.isEmpty(singleSql)){
+            if (debug){
+                logger.debug("传入SQL语句为空");
+            }
+            throw new IllegalArgumentException("传入参数不能为空 --> sql is empty");
+        }
+        String[] splitBySeparator = singleSql.split(this.separator);
+        if (splitBySeparator.length > 1){
+            if (debug){
+                logger.debug("传入SQL语句格式错误, 请检查是否使用\";\"进行语句结束, \";\"是默认分割器, 当前分割器为: {}", this.separator);
+            }
+            throw new IllegalArgumentException("传入参数错误, 不能传入多条SQL语句(默认使用\";\"作为分割器)");
+        }
+        getJdbcTemplate().execute(singleSql);
+    }
+
+    /**
+     * 用于执行sql文件
      *
      * 小声BB:
      * 这里其实就是创建表, 根据不同的模式创建不同模式下需要的表
      * 这里是将相关的ddl文件放置到资源目录下, 具体目录为: resource/support/ddl/
      *
-     * 这里发现指定执行第一条语句
-     * @param filename
-     * @param currentAuthType 表示当前系统中支持的模式, 默认为{@link com.light.security.core.constant.AuthTypeEnum#SIMPLE}
-     * @throws Exception
-     */
-    protected void createTable(String filename, Enum currentAuthType) throws Exception {
-        if (StringUtils.isEmpty(filename) || !filename.substring(0, filename.indexOf(".")).endsWith(currentAuthType.name().toLowerCase(Locale.getDefault()))){
-            throw new IllegalAccessException("参数异常 --> filename is empty or not matcher currentAuthType, filename: " + filename);
-        }
-        filename = ddlFilePrefix + filename;
-        String ddlQuery = null;
-        InputStream inputStream = null;
-        ClassPathResource classPathResource = new ClassPathResource(filename);
-        try {
-            inputStream = classPathResource.getInputStream();
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            byte[] byteBuffer = new byte[1024];
-            int len = 0;
-            while ((len = inputStream.read(byteBuffer)) != -1){
-                bos.write(byteBuffer, 0, len);
-            }
-            bos.close();
-            ddlQuery = bos.toString("utf-8");
-        }catch (Exception e){
-            if (logger.isDebugEnabled()){
-                logger.debug("文件读取异常: {}", e.getMessage());
-            }
-            throw e;
-        }
-        if (StringUtils.isEmpty(ddlQuery)){
-            throw new InternalServiceException(500, "文件读取异常, 获取文件数据为空");
-        }
-//        getJdbcTemplate().execute(ddlQuery);//只能执行第一条sql
-        Statement statement = getJdbcTemplate().getDataSource().getConnection().createStatement();
-        statement.executeUpdate(ddlQuery);
-        statement.close();
-    }
-
-    /**
-     * 用于执行sql文件
      * @param filename
      * @param currentAuthType
      * @throws Exception
@@ -185,6 +214,21 @@ public abstract class AbstractJdbcProcessor extends JdbcDaoSupport implements Jd
             throw new IllegalAccessException("参数异常 --> filename is empty or not matcher currentAuthType, filename: " + filename);
         }
         filename = ddlFilePrefix + filename;
+        /**
+         * 引发问题原因: 想要一次性执行多条Create语句, 无奈发现{@link org.springframework.jdbc.core.JdbcTemplate#execute(String)}
+         * 方法一次只能执行一条语句(即使传入多条, 也只会执行第一条)
+         *
+         * 下方代码来自网络, 可参见: https://stackoverrun.com/cn/q/8456498
+         *
+         * 其实自己也能达到这个目的, 关键在于解析传入的多条语句(如来自SQL文件), 然后循环执行.
+         * 其实下面的代码也是这样实现的, 可以看其源码(定个坐标 {@link org.springframework.jdbc.datasource.init.ScriptUtils#executeSqlScript(Connection, EncodedResource, boolean, boolean, String, String, String, String)})
+         *
+         * 警告警告: 这里一定要注意一个问题: SQL文件支持两种注释方式(1: "--", 2: "#"), 但是在这里最好是不要使用
+         * 第二种进行注释, 不然很有可能会出问题, 这个原因在于对sql文件的解析(分割位置, 注释过滤等), 这也是我遇上了
+         * 这个问题, 断点调试的时候发现, 不过并没有深入研究源码. 具体你可以看我的SQL文件中注释使用
+         * resources/support/ddl/目录下用于存放DDL_SQL文件
+         *
+         */
         ClassPathResource classPathResource = new ClassPathResource(filename);
         ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator(classPathResource);
         logger.info(ToStringBuilder.reflectionToString(databasePopulator, ToStringStyle.MULTI_LINE_STYLE));
@@ -194,15 +238,40 @@ public abstract class AbstractJdbcProcessor extends JdbcDaoSupport implements Jd
     }
 
     /**
+     * 用于执行sql文件
+     *
+     * 小声BB:
+     * 这里其实就是创建表, 根据不同的模式创建不同模式下需要的表
+     * 这里是将相关的ddl文件放置到资源目录下, 具体目录为: resource/support/ddl/
+     *
+     * @param currentAuthType
+     * @throws Exception
+     */
+    protected void createTableWithSqlFile(Enum currentAuthType) throws Exception {
+        createTableWithSqlFile(this.ddlQueryFilename, currentAuthType);
+    }
+
+    /**
      * 用于对角色排序和转换
      * @param roles
      * @return
      */
-    protected Collection<GrantedRole> comparatorAndTransformToGrantedRoleList(List<Role> roles){
-        roles.sort(Comparator.comparingInt(Role::getKey));
+    protected Collection<GrantedRole> comparatorAndTransformToGrantedRoleList(Collection<Role> roles){
+        List<Role> comparatorRoles = comparatorAndRepeatMergeRoleList(roles);
+        return transformToGrantedRole(comparatorRoles);
+    }
+
+    /**
+     * 对传入角色进行排序以及重复角色合并
+     * @param roles
+     * @return
+     */
+    protected List<Role> comparatorAndRepeatMergeRoleList(Collection<Role> roles){
         Map<Integer, Role> roleBuffer = new HashMap<>();
+        List<Role> handleRoles = new ArrayList<>(roles);
+        handleRoles.sort(Comparator.comparingInt(Role::getKey));
         Role previousRole = null;
-        for (Role role : roles){
+        for (Role role : handleRoles){
             if (previousRole != null && previousRole.getKey() == role.getKey()){
                 /**
                  * 这个if条件好像不会触发, 除非循环中的role就是null
@@ -211,13 +280,13 @@ public abstract class AbstractJdbcProcessor extends JdbcDaoSupport implements Jd
                     roleBuffer.put(previousRole.getKey(), previousRole);
                 }
 
-                roleBuffer.get(role.getKey()).addAuthorities(role.getAuthorities());
+                roleBuffer.get(role.getKey()).addAuthorities((Collection<Authority>) role.getAuthorities());
                 continue;
             }
             previousRole = role;
             roleBuffer.put(role.getKey(), role);
         }
-        return transformToGrantedRole(new ArrayList<>(roleBuffer.values()));
+        return new ArrayList<>(roleBuffer.values());
     }
 
     /**
@@ -225,7 +294,7 @@ public abstract class AbstractJdbcProcessor extends JdbcDaoSupport implements Jd
      * @param handledRoles
      * @return
      */
-    protected Collection<GrantedRole> transformToGrantedRole(List<Role> handledRoles){
+    protected Collection<GrantedRole> transformToGrantedRole(Collection<Role> handledRoles){
         List<GrantedRole> grantedRoles = new ArrayList<>(handledRoles.size());
         handledRoles.stream().forEach(role -> grantedRoles.add(new DefaultGrantRole(role)));
         return grantedRoles;
@@ -234,5 +303,6 @@ public abstract class AbstractJdbcProcessor extends JdbcDaoSupport implements Jd
     @Override
     protected void initDao() throws Exception {
         Assert.notNull(getDataSource(), "数据源不能为空");
+        Assert.notNull(separator, "分割器不能为空");
     }
 }

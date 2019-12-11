@@ -1,6 +1,5 @@
 package com.light.security.core.authentication.dao.jdbc;
 
-import com.light.security.core.constant.AuthTypeEnum;
 import com.light.security.core.properties.SecurityProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +55,7 @@ public class JdbcQuery implements InitializingBean {
     /**
      * 根据authority的id集合查询action
      */
-    private final static String ADVANCE_DEF_ACTION_AUTHORITIES_QUERY = "select" +
+    private final static String ADVANCE_DEF_ACTION_AUTHORITIES_QUERY_BATCH = "select" +
             "  a.type type" +
             " , c.id id, c.parent_id parentId, c.action_code `code`, c.action_name `name`" +
             " , c.action_desc `desc`, c.pattern pattern, c.enabled enabled, c.opened opened" +
@@ -64,7 +63,8 @@ public class JdbcQuery implements InitializingBean {
             "left join authority_action b on a.id = b.authority_id" +
             "left join action c on b.action_id = c.id";
 
-    private final static String ADVANCE_DEF_MENU_AUTHORITIES_QUERY = "select" +
+
+    private final static String ADVANCE_DEF_MENU_AUTHORITIES_QUERY_BATCH = "select" +
             "  a.type type" +
             " , c.id id, c.parent_id parentId, c.menu_code `code`, c.menu_name `name`" +
             " , c.menu_desc `desc`, c.menu_link link, c.menu_icon icon" +
@@ -73,7 +73,7 @@ public class JdbcQuery implements InitializingBean {
             " left join authority_menu b on a.id = b.authority_id" +
             " left join menu c on b.menu_id = c.id";
 
-    private final static String ADVANCE_DEF_ELEMENT_AUTHORITIES_QUERY = "select" +
+    private final static String ADVANCE_DEF_ELEMENT_AUTHORITIES_QUERY_BATCH = "select" +
             "  a.type type" +
             " , c.id id, c.parent_id parentId, c.element_code `code`, c.element_name `name`" +
             " , c.element_desc `desc`, c.enabled enabled, c.opened opened" +
@@ -89,7 +89,7 @@ public class JdbcQuery implements InitializingBean {
         Map<String, String> SIMPLE_QUERY_MAP = new HashMap<>();
         SIMPLE_QUERY_MAP.put(QueryKey.DEF_SUBJECTS_BY_SUBJECT_NAME_QUERY.name(), SIMPLE_DEF_SUBJECTS_BY_SUBJECT_NAME_QUERY);
         SIMPLE_QUERY_MAP.put(QueryKey.DEF_AUTHORITIES_BY_SUBJECT_ID_QUERY.name(), SIMPLE_DEF_AUTHORITIES_BY_SUBJECT_ID_QUERY);
-        DEFAULT_QUERY.put(AuthTypeEnum.SIMPLE.name(), SIMPLE_QUERY_MAP);
+        DEFAULT_QUERY.put(SecurityProperties.AuthTypeEnum.SIMPLE.name(), SIMPLE_QUERY_MAP);
 
         /**
          * 构建进阶模式的权限查询
@@ -97,10 +97,12 @@ public class JdbcQuery implements InitializingBean {
         Map<String, String> ADVANCE_QUERY_MAP = new HashMap<>();
         ADVANCE_QUERY_MAP.put(QueryKey.DEF_SUBJECTS_BY_SUBJECT_NAME_QUERY.name(), ADVANCE_DEF_SUBJECTS_BY_SUBJECT_NAME_QUERY);
         ADVANCE_QUERY_MAP.put(QueryKey.DEF_AUTHORITIES_BY_SUBJECT_ID_QUERY.name(), ADVANCE_DEF_AUTHORITIES_BY_SUBJECT_ID_QUERY);
-        ADVANCE_QUERY_MAP.put(QueryKey.DEF_ACTION_AUTHORITIES_QUERY.name(), ADVANCE_DEF_ACTION_AUTHORITIES_QUERY);
-        ADVANCE_QUERY_MAP.put(QueryKey.DEF_MENU_AUTHORITIES_QUERY.name(), ADVANCE_DEF_MENU_AUTHORITIES_QUERY);
-        ADVANCE_QUERY_MAP.put(QueryKey.DEF_ELEMENT_AUTHORITIES_QUERY.name(), ADVANCE_DEF_ELEMENT_AUTHORITIES_QUERY);
-        DEFAULT_QUERY.put(AuthTypeEnum.ADVANCE.name(), ADVANCE_QUERY_MAP);
+
+        ADVANCE_QUERY_MAP.put(QueryKey.DEF_ACTION_AUTHORITIES_QUERY_BATCH.name(), ADVANCE_DEF_ACTION_AUTHORITIES_QUERY_BATCH);
+
+        ADVANCE_QUERY_MAP.put(QueryKey.DEF_MENU_AUTHORITIES_QUERY_BATCH.name(), ADVANCE_DEF_MENU_AUTHORITIES_QUERY_BATCH);
+        ADVANCE_QUERY_MAP.put(QueryKey.DEF_ELEMENT_AUTHORITIES_QUERY_BATCH.name(), ADVANCE_DEF_ELEMENT_AUTHORITIES_QUERY_BATCH);
+        DEFAULT_QUERY.put(SecurityProperties.AuthTypeEnum.ADVANCE.name(), ADVANCE_QUERY_MAP);
     }
 
     private static Map<String, String> CURRENT_QUERY = new HashMap<>();
@@ -142,8 +144,8 @@ public class JdbcQuery implements InitializingBean {
         DEF_SUBJECTS_BY_SUBJECT_NAME_QUERY,
         DEF_AUTHORITIES_BY_SUBJECT_ID_QUERY,
 
-        DEF_ACTION_AUTHORITIES_QUERY,
-        DEF_MENU_AUTHORITIES_QUERY,
-        DEF_ELEMENT_AUTHORITIES_QUERY,
+        DEF_ACTION_AUTHORITIES_QUERY_BATCH,
+        DEF_MENU_AUTHORITIES_QUERY_BATCH,
+        DEF_ELEMENT_AUTHORITIES_QUERY_BATCH,
     }
 }

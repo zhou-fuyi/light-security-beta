@@ -1,10 +1,8 @@
 package com.light.security.core.properties;
 
-import com.light.security.core.constant.AuthTypeEnum;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -15,8 +13,6 @@ import java.util.List;
  */
 @ConfigurationProperties(prefix = "light.security")
 public class SecurityProperties {
-
-    private String name;
 
     /**
      * 默认使用简易模式
@@ -36,14 +32,6 @@ public class SecurityProperties {
     private List<String> ignored = new ArrayList<>();
 
     public SecurityProperties() {
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public AuthTypeEnum getAuthType() {
@@ -76,5 +64,30 @@ public class SecurityProperties {
 
     public void setIgnored(List<String> ignored) {
         this.ignored = ignored;
+    }
+
+    /**
+     * @EnumName AuthTypeEnum
+     * @Description 权限类型, 记录RBAC模型的构造形式, 目前提供简单、进阶、组概念三种
+     * 具体的 resources/support/ddl/ 路径下 light-security-simple.ddl 和 light-security-advance.ddl
+     * @Author ZhouJian
+     * @Date 2019-12-09
+     */
+    public enum AuthTypeEnum {
+        /**
+         * 简易模式
+         */
+        SIMPLE
+        ,
+        /**
+         * 进阶模式
+         */
+        ADVANCE
+        ,
+        /**
+         * 组概念模式
+         */
+        GROUP
+        ;
     }
 }

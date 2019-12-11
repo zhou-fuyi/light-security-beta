@@ -9,31 +9,38 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 import java.util.List;
 
 /**
- * @ClassName JdbcDaoImpl
- * @Description 仿照SpringSecurity中JdbcDaoImpl完成
- *
+ * @ClassName JdbcDaoProcessorManager
+ * @Description {@link DaoProcessorManager}的默认实现, 用于调度{@link JdbcDaoProcessor}完成账户主体的认证
  * @Author ZhouJian
  * @Date 2019-12-09
  */
-public class JdbcDaoProcessorManager implements DaoProcessorManager, InitializingBean {
+public class JdbcDaoProcessorManager implements DaoProcessorManager {
 
     private final static Logger logger = LoggerFactory.getLogger(JdbcDaoProcessorManager.class);
 
     @Autowired
     private SecurityProperties securityProperties;
 
+    /**
+     * 依赖搜索, 自动注入{@link JdbcDaoProcessor}的实例类
+     */
     @Autowired
     private List<JdbcDaoProcessor> jdbcDaoProcessors;
 
+    /**
+     * 原本是用于优化操作的, 但是目前我的代码实现不好看, 不优雅了, 待我后续改造
+     */
     private JdbcDaoProcessor currentProcessor;
 
+    /**
+     * 是否在系统启动的时候自动创建表, 默认为false
+     */
     private boolean autoCreateTableOnStartup;
 
     public JdbcDaoProcessor getCurrentProcessor() {
@@ -120,8 +127,11 @@ public class JdbcDaoProcessorManager implements DaoProcessorManager, Initializin
                 if (processor.support(currentAuthType)){
                     this.currentProcessor = processor;
                     processor.autoInitTable(currentAuthType);
-                    break;
+                    return;
                 }
+            }
+            if (logger.isWarnEnabled()){
+                logger.warn("未找到适配当前模式的JdbcDaoProcessor处理器, 请确认是否支持模式: {}", currentAuthType.name());
             }
         }
     }

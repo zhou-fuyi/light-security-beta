@@ -4,8 +4,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.StringUtils;
 
 import java.io.*;
+import java.util.Arrays;
 
 public class AbstractJdbcProcessorTest {
 
@@ -67,5 +69,26 @@ public class AbstractJdbcProcessorTest {
             throw e;
         }
         System.out.println(ddlQuery);
+    }
+
+    @Test
+    public void testSplit(){
+        String sql = " 123; ";
+        String sql1 = "123;";
+        String sql2 = "123;456;";
+        String sql3 = "123;456; ";
+        String sql4 = " ";
+        String sql5 = "123132";
+
+        System.out.println(Arrays.toString(sql.trim().split(";")));
+        System.out.println(Arrays.toString(sql1.split(";")));
+        System.out.println(Arrays.toString(sql2.split(";")));
+        System.out.println(Arrays.toString(sql3.split(";")));
+        String[] temp4 = sql4.trim().split(";");
+        System.out.println(temp4.length);
+        System.out.println(temp4[0]);
+        System.out.println(Arrays.toString(temp4));
+        System.out.println(Arrays.toString(sql5.split(";")));
+
     }
 }

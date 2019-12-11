@@ -54,7 +54,7 @@ allprojects {
 
     dependencies {
         compile 'org.springframework.boot:spring-boot-starter-web'
-        compile 'org.springframework.boot:spring-boot-configuration-processor'
+        annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
         compile 'org.springframework.boot:spring-boot-starter-data-redis'
         compile 'org.projectlombok:lombok'
         runtime 'org.postgresql:postgresql'
@@ -67,5 +67,6 @@ allprojects {
             exclude group: 'io.swagger:swagger-models:1.5.20'
         }
         compile "${rootProject.ext.dependencies.swagger_models}"
+//        compileJava.dependsOn(processResources)
     }
 }

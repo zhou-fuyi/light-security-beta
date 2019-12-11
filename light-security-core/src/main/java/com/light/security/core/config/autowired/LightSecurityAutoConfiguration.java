@@ -33,7 +33,7 @@ import java.util.List;
 @Configuration
 @ConditionalOnClass({AuthenticationManager.class, GlobalAuthenticationConfigurerAdapter.class})
 @Import({SpringBootWebSecurityConfiguration.class, AuthenticationManagerConfiguration.class})
-@EnableConfigurationProperties
+@EnableConfigurationProperties(SecurityProperties.class)// 开启<code> ConfigurationProperties </code>支持
 public class LightSecurityAutoConfiguration {
 
     /**

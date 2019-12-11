@@ -1,17 +1,22 @@
 package com.light.security.core.authentication.dao.jdbc;
 
 import com.light.security.core.access.role.GrantedRole;
-import com.light.security.core.constant.AuthTypeEnum;
+import com.light.security.core.properties.SecurityProperties;
 
 import java.util.Collection;
 
 /**
  * @ClassName GroupJdbcDaoProcessor
- * @Description 适用于组概念模式 {@link AuthTypeEnum#GROUP}下的账户查询
+ * @Description 适用于组概念模式 {@link com.light.security.core.properties.SecurityProperties.AuthTypeEnum#GROUP}下的账户查询
  * @Author ZhouJian
  * @Date 2019-12-09
  */
 public class GroupJdbcDaoProcessor extends AbstractJdbcProcessor {
+
+    public GroupJdbcDaoProcessor(){
+        setEnabledGroups(true);
+    }
+
     @Override
     public Collection<GrantedRole> loadSubjectAuthorities(Integer subjectId) {
         return null;
@@ -20,6 +25,6 @@ public class GroupJdbcDaoProcessor extends AbstractJdbcProcessor {
 
     @Override
     public boolean support(Enum authType) {
-        return authType.name().equals(AuthTypeEnum.GROUP.name());
+        return authType.name().equals(SecurityProperties.AuthTypeEnum.GROUP.name());
     }
 }

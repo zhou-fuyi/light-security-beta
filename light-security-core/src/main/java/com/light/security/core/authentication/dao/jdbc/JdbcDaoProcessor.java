@@ -3,7 +3,6 @@ package com.light.security.core.authentication.dao.jdbc;
 import com.light.security.core.access.role.GrantedRole;
 import com.light.security.core.authentication.subject.SubjectDetail;
 import com.light.security.core.exception.AuthenticationException;
-import com.light.security.core.exception.SubjectNameNotFoundException;
 
 import java.util.Collection;
 
