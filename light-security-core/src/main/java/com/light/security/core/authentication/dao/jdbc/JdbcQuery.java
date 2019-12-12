@@ -26,15 +26,15 @@ public class JdbcQuery implements InitializingBean {
     // SIMPLE_TYPE start
     private final static String SIMPLE_DEF_SUBJECTS_BY_SUBJECT_NAME_QUERY = "select id, subject_name subjectName, password, enabled from subject where subject_name = ?";
     private final static String SIMPLE_DEF_AUTHORITIES_BY_SUBJECT_ID_QUERY = "select" +
-            " c.role_name roleName, c.role_code roleCode, c.role_desc roleDesc" +
-            ", e.type type, e.parent_id parentId, e.authority_code `code`, e.authority_name `name`" +
-            ", e.authority_desc `desc`, e.pattern pattern, e.authority_link link, e.authority_icon icon" +
-            ", e.enabled enabled, e.opened opened" +
-            " from (select * from subject where id = ?) a" +
-            " left join subject_role b on a.id = b.subject_id" +
-            " left join role c on b.role_id = c.id" +
-            " left join role_authority d on c.id = d.role_id" +
-            " left join authority e on d.authority_id = e.id";
+            "\tc.id roleId, c.role_name roleName, c.role_code roleCode, c.role_desc roleDesc" +
+            "\t,e.id authId, e.type type, e.parent_id parentId, e.authority_code `code`, e.authority_name `name`" +
+            "\t, e.authority_desc `desc`, e.pattern pattern, e.authority_link link, e.authority_icon icon" +
+            "\t, e.enabled enabled, e.opened opened" +
+            "\tfrom (select * from subject where id = ? ) a" +
+            "\tleft join subject_role b on a.id = b.subject_id" +
+            "\tleft join role c on b.role_id = c.id" +
+            "\tleft join role_authority d on c.id = d.role_id" +
+            "\tleft join authority e on d.authority_id = e.id";
     // SIMPLE_TYPE end
 //    ===================================================================================================================================================================
 
@@ -45,42 +45,44 @@ public class JdbcQuery implements InitializingBean {
      * 查询账户管理的authority集合
      */
     private final static String ADVANCE_DEF_AUTHORITIES_BY_SUBJECT_ID_QUERY = "select" +
-            " r.role_name roleName, r.role_code roleCode, r.role_desc roleDesc\n" +
-            ", a.id id, a.type type" +
-            " from (select * from subject where id = ?) s" +
-            " left join subject_role sr on s.id = sr.subject_id" +
-            " left join role r on sr.role_id = r.id" +
-            " left join role_authority ra on r.id = ra.role_id" +
-            " left join authority a on ra.authority_id = a.id";
+            "\tc.id roleId, c.role_name roleName, c.role_code roleCode, c.role_desc roleDesc" +
+            "\t, e.id authId, e.type type" +
+            "\tfrom (select * from subject where id = ?) a" +
+            "\tleft join subject_role b on a.id = b.subject_id" +
+            "\tleft join role c on b.role_id = c.id" +
+            "\tleft join role_authority d on c.id = d.role_id" +
+            "\tleft join authority e on d.authority_id = e.id";
     /**
      * 根据authority的id集合查询action
      */
     private final static String ADVANCE_DEF_ACTION_AUTHORITIES_QUERY_BATCH = "select" +
-            "  a.type type" +
-            " , c.id id, c.parent_id parentId, c.action_code `code`, c.action_name `name`" +
-            " , c.action_desc `desc`, c.pattern pattern, c.enabled enabled, c.opened opened" +
-            "from (select * from authority where id in ?) a" +
-            "left join authority_action b on a.id = b.authority_id" +
-            "left join action c on b.action_id = c.id";
+            "\ta.type type" +
+            "\t, c.id id, c.parent_id parentId, c.action_code `code`, c.action_name `name`, c.method method" +
+            "\t, c.action_desc `desc`, c.pattern pattern, c.enabled enabled, c.opened opened" +
+            "\tfrom (select * from authority where id in (:auth_ids)) a" +
+            "\tleft join authority_action b on a.id = b.authority_id" +
+            "\tleft join action c on b.action_id = c.id";
 
 
     private final static String ADVANCE_DEF_MENU_AUTHORITIES_QUERY_BATCH = "select" +
-            "  a.type type" +
-            " , c.id id, c.parent_id parentId, c.menu_code `code`, c.menu_name `name`" +
-            " , c.menu_desc `desc`, c.menu_link link, c.menu_icon icon" +
-            " , c.enabled enabled, c.opened opened" +
-            " from (select * from authority where id in ?) a" +
-            " left join authority_menu b on a.id = b.authority_id" +
-            " left join menu c on b.menu_id = c.id";
+            "\ta.type type" +
+            "\t, c.id id, c.parent_id parentId, c.menu_code `code`, c.menu_name `name`" +
+            "\t, c.menu_desc `desc`, c.menu_link link, c.menu_icon icon" +
+            "\t, c.enabled enabled, c.opened opened" +
+            "\tfrom (select * from authority where id in (:auth_ids)) a" +
+            "\tleft join authority_menu b on a.id = b.authority_id" +
+            "\tleft join menu c on b.menu_id = c.id";
 
     private final static String ADVANCE_DEF_ELEMENT_AUTHORITIES_QUERY_BATCH = "select" +
-            "  a.type type" +
-            " , c.id id, c.parent_id parentId, c.element_code `code`, c.element_name `name`" +
-            " , c.element_desc `desc`, c.enabled enabled, c.opened opened" +
-            " from (select * from authority where id in ?) a" +
-            " left join authority_element b on a.id = b.authority_id" +
-            " left join element c on b.element_id = c.id";
+            "\ta.type type" +
+            "\t, c.id id, c.parent_id parentId, c.element_code `code`, c.element_name `name`" +
+            "\t, c.element_desc `desc`, c.enabled enabled, c.opened opened" +
+            "\tfrom (select * from authority where id in (:auth_ids)) a" +
+            "\tleft join authority_element b on a.id = b.authority_id" +
+            "\tleft join element c on b.element_id = c.id";
     //ADVANCE_TYPE end
+
+    private final static String ADVANCE_DEF_AUTHORITY_QUERY_IN_KEY = "auth_ids";
 
     static {
         /**
@@ -102,6 +104,7 @@ public class JdbcQuery implements InitializingBean {
 
         ADVANCE_QUERY_MAP.put(QueryKey.DEF_MENU_AUTHORITIES_QUERY_BATCH.name(), ADVANCE_DEF_MENU_AUTHORITIES_QUERY_BATCH);
         ADVANCE_QUERY_MAP.put(QueryKey.DEF_ELEMENT_AUTHORITIES_QUERY_BATCH.name(), ADVANCE_DEF_ELEMENT_AUTHORITIES_QUERY_BATCH);
+        ADVANCE_QUERY_MAP.put(QueryKey.DEF_AUTHORITY_QUERY_IN_KEY.name(), ADVANCE_DEF_AUTHORITY_QUERY_IN_KEY);
         DEFAULT_QUERY.put(SecurityProperties.AuthTypeEnum.ADVANCE.name(), ADVANCE_QUERY_MAP);
     }
 
@@ -129,6 +132,7 @@ public class JdbcQuery implements InitializingBean {
      * 子类可以重写该方法进行实现
      */
     protected void initQuery() {
+        logger.warn("开始初始化当前模式下的SQL");
         CURRENT_QUERY = DEFAULT_QUERY.get(securityProperties.getAuthType().name());
         if (logger.isDebugEnabled()){
             logger.debug("当前模式为: {}, Query 数据有{}条",securityProperties.getAuthType().name(), CURRENT_QUERY.size());
@@ -147,5 +151,10 @@ public class JdbcQuery implements InitializingBean {
         DEF_ACTION_AUTHORITIES_QUERY_BATCH,
         DEF_MENU_AUTHORITIES_QUERY_BATCH,
         DEF_ELEMENT_AUTHORITIES_QUERY_BATCH,
+
+        /**
+         * 用于表示JdbcTemplate中使用in表达式时 key 值
+         */
+        DEF_AUTHORITY_QUERY_IN_KEY,
     }
 }

@@ -1,8 +1,6 @@
 
 -- 共5张表, 该模型属于简易RBAC模型(测试使用数据库: MYSQL, 版本: 8.0+)
 
-# ===========================================================================================================
-
 -- 创建数据库 light_security_db
 -- drop DATABASE if exists `light_security_db`;
 -- create database `light_security_db` charset utf8 collate utf8_general_ci;
@@ -10,7 +8,9 @@
 -- 切换到数据库 enterprise_service_management_db
 -- use `light_security_db`;
 
-# ===========================================================================================================
+
+-- 注意事项, 在这里不能使用"#"作为注释, 不然可能会造成sql不能正常执行
+
 
 
 -- 创建认证主体表
@@ -25,7 +25,6 @@ create table `subject` (
 	unique key union_key_subject_name (`subject_name`)
 )engine = innodb default charset = utf8 comment '认证主体表';
 
-# ------------------------------------------------------------------------------------------------------------
 
 -- 创建角色表
 create table role (
@@ -39,7 +38,6 @@ create table role (
 	unique key union_key_role_name (role_name)
 )engine = innodb default charset = utf8 comment '角色表';
 
-# ------------------------------------------------------------------------------------------------------------
 
 -- 创建认证主体与角色关联表
 create table subject_role (
@@ -54,7 +52,6 @@ create table subject_role (
 	foreign key fk_subjects_role_role_id (role_id) references role (id)
 )engine = innodb default charset = utf8 comment '认证主体与角色关联表';
 
-# ------------------------------------------------------------------------------------------------------------
 
 -- 创建权限表(权限表囊括了所有可能的权限, 如API、菜单、元素等)
 create table authority (
@@ -67,6 +64,7 @@ create table authority (
 	authority_desc varchar(100) comment '权限描述',
 
 	pattern varchar(500) comment 'API作用URL',
+	method varchar(10) comment 'API请求方法, {1: post, 2: get, 3: put, 4: delete, 5: head, 6: options ...}',
 
 	authority_link varchar(500) comment '菜单链接地址',
 	authority_icon varchar(500) comment '菜单图标(可以是样式名, 可以是链接地址)',
@@ -78,7 +76,6 @@ create table authority (
 	primary key pk_authority_id (id)
 )engine = innodb default charset = utf8 comment '权限表';
 
-# ------------------------------------------------------------------------------------------------------------
 
 -- 创建角色权限关联表
 create table role_authority (
@@ -102,4 +99,3 @@ create table role_authority (
 -- drop table if exists role;
 
 -- drop table if exists authority;
-

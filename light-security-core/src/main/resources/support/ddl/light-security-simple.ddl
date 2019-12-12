@@ -64,6 +64,7 @@ create table authority (
 	authority_desc varchar(100) comment '权限描述',
 
 	pattern varchar(500) comment 'API作用URL',
+	method varchar(10) comment 'API请求方法, {1: post, 2: get, 3: put, 4: delete, 5: head, 6: options ...}',
 
 	authority_link varchar(500) comment '菜单链接地址',
 	authority_icon varchar(500) comment '菜单图标(可以是样式名, 可以是链接地址)',

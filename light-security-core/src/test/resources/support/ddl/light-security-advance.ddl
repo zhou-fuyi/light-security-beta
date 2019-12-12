@@ -1,8 +1,6 @@
 
 -- 共11张表, 该模型属于简易RBAC模型(参见light_security_simple.ddl)的拓展版(测试使用数据库: MYSQL, 版本: 8.0+)
 
-# ===========================================================================================================
-
 -- 创建数据库 light_security_db
 -- drop DATABASE if exists `light_security_db`;
 -- create database `light_security_db` charset utf8 collate utf8_general_ci;
@@ -10,7 +8,9 @@
 -- 切换到数据库 enterprise_service_management_db
 -- use `light_security_db`;
 
-# ===========================================================================================================
+
+-- 注意事项, 在这里不能使用"#"作为注释, 不然可能会造成sql不能正常执行
+
 
 
 -- 创建认证主体表
@@ -25,7 +25,6 @@ create table `subject` (
 	unique key union_key_subject_name (`subject_name`)
 )engine = innodb default charset = utf8 comment '认证主体表';
 
-# ------------------------------------------------------------------------------------------------------------
 
 -- 创建角色表
 create table role (
@@ -39,7 +38,6 @@ create table role (
 	unique key union_key_role_name (role_name)
 )engine = innodb default charset = utf8 comment '角色表';
 
-# ------------------------------------------------------------------------------------------------------------
 
 -- 创建认证主体与角色关联表
 create table subject_role (
@@ -54,7 +52,6 @@ create table subject_role (
 	foreign key fk_subjects_role_role_id (role_id) references role (id)
 )engine = innodb default charset = utf8 comment '认证主体与角色关联表';
 
-# ------------------------------------------------------------------------------------------------------------
 
 -- 创建权限表
 create table authority (
@@ -65,7 +62,6 @@ create table authority (
 	primary key pk_authority_id (id)
 )engine = innodb default charset = utf8 comment '权限表';
 
-# ------------------------------------------------------------------------------------------------------------
 
 -- 创建角色权限关联表
 create table role_authority (
@@ -80,7 +76,6 @@ create table role_authority (
 	foreign key fk_role_authority_authority_id (authority_id) references authority (id)
 )engine = innodb default charset = utf8 comment '角色权限关联表';
 
-# ------------------------------------------------------------------------------------------------------------
 
 -- 创建API权限表
 create table action (
@@ -89,6 +84,7 @@ create table action (
 	action_code varchar(100) not null comment 'API权限编码',
 	action_name varchar(100) not null comment 'API权限名称',
 	pattern varchar(500) not null comment 'API作用URL',
+	method varchar(10) comment 'API请求方法, {1: post, 2: get, 3: put, 4: delete, 5: head, 6: options ...}',
 	action_desc varchar(100) comment 'API权限描述',
 	enabled boolean not null default 0 comment '权限是否可用,  {1: true, 0: false}, 默认为false, 便是不可用',
 	opened boolean not null default 0 comment '是否为公共权限, {1: true, 0: false}, 默认为false, 便是非公共',
@@ -98,7 +94,6 @@ create table action (
 	unique key union_key_action_code (action_code)
 )engine = innodb default charset = utf8 comment 'API权限表';
 
-# ------------------------------------------------------------------------------------------------------------
 
 -- 创建权限与API权限的关联表
 create table authority_action (
@@ -113,7 +108,6 @@ create table authority_action (
 	foreign key fk_authority_action_action_id (action_id) references action (id)
 )engine = innodb default charset = utf8 comment '权限与API权限的关联表';
 
-# ------------------------------------------------------------------------------------------------------------
 
 -- 创建菜单权限表
 create table menu (
@@ -132,7 +126,6 @@ create table menu (
 	unique key union_key_menu (menu_code)
 )engine = innodb default charset = utf8 comment '菜单权限表';
 
-# ------------------------------------------------------------------------------------------------------------
 
 -- 创建权限与菜单权限关联表
 create table authority_menu (
@@ -147,7 +140,6 @@ create table authority_menu (
 	foreign key fk_authority_menu_menu_id (menu_id) references menu (id)
 )engine = innodb default charset = utf8 comment '权限与菜单权限的关联表';
 
-# ------------------------------------------------------------------------------------------------------------
 
 -- 创建元素权限表
 create table element (
@@ -164,7 +156,6 @@ create table element (
 	unique key union_key_element (element_code)
 )engine = innodb default charset = utf8 comment '元素权限表';
 
-# ------------------------------------------------------------------------------------------------------------
 
 -- 创建权限与元素权限关联表
 create table authority_element (

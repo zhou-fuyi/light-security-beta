@@ -6,11 +6,13 @@ import com.light.security.core.access.model.MenuAuthority;
 import com.light.security.core.authentication.dao.jdbc.JdbcQuery;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,8 +33,10 @@ public class MenuAuthorityDaoProcessor extends AbstractAuthorityDaoProcessor {
     @Override
     public List<Authority> loadAuthorities(List<AssistAuthority> assistAuthorities) {
         List<Integer> assistAuthorityIds = assistAuthorities.stream().map(AssistAuthority::getAuthorityId).collect(Collectors.toList());
-        return getJdbcTemplate().query(JdbcQuery.getQuery(JdbcQuery.QueryKey.DEF_MENU_AUTHORITIES_QUERY_BATCH.name())
-                , new Object[]{ assistAuthorityIds }, new ResultSetExtractor<List<Authority>>() {
+        HashMap<String, Object> paramMap = new HashMap<>();
+        paramMap.put(JdbcQuery.getQuery(JdbcQuery.QueryKey.DEF_AUTHORITY_QUERY_IN_KEY.name()), assistAuthorityIds);
+        return new NamedParameterJdbcTemplate(getJdbcTemplate()).query(JdbcQuery.getQuery(JdbcQuery.QueryKey.DEF_MENU_AUTHORITIES_QUERY_BATCH.name())
+                , paramMap, new ResultSetExtractor<List<Authority>>() {
                     @Override
                     public List<Authority> extractData(ResultSet rs) throws SQLException, DataAccessException {
                         List<Authority> authorities = new ArrayList<>(assistAuthorityIds.size());
@@ -44,6 +48,7 @@ public class MenuAuthorityDaoProcessor extends AbstractAuthorityDaoProcessor {
                                     .opened(rs.getBoolean("opened"))
                                     .type(rs.getString("type"))
                                     .build();
+                            authorities.add(authority);
                         }
                         return authorities;
                     }

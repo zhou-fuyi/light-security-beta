@@ -1,6 +1,8 @@
 package com.light.security.core.access.model;
 
 import com.light.security.core.access.model.base.BaseEntity;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -113,5 +115,10 @@ public abstract class AbstractRole extends BaseEntity implements Role {
             return this;
         }
 
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }

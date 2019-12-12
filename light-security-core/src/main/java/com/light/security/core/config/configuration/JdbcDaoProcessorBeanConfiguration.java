@@ -1,14 +1,12 @@
 package com.light.security.core.config.configuration;
 
 import com.light.security.core.access.model.ActionAuthority;
-import com.light.security.core.authentication.dao.jdbc.AdvanceJdbcDaoProcessor;
-import com.light.security.core.authentication.dao.jdbc.GroupJdbcDaoProcessor;
-import com.light.security.core.authentication.dao.jdbc.JdbcDaoProcessorManager;
-import com.light.security.core.authentication.dao.jdbc.SimpleJdbcDaoProcessor;
+import com.light.security.core.authentication.dao.jdbc.*;
 import com.light.security.core.authentication.dao.jdbc.auth.ActionAuthorityDaoProcessor;
 import com.light.security.core.authentication.dao.jdbc.auth.ElementAuthorityDaoProcessor;
 import com.light.security.core.authentication.dao.jdbc.auth.MenuAuthorityDaoProcessor;
 import com.light.security.core.properties.SecurityProperties;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -26,6 +24,15 @@ import javax.sql.DataSource;
 @Configuration
 public class JdbcDaoProcessorBeanConfiguration {
 
+    /**
+     * 注册这个类主要是为了使用{@link InitializingBean#afterPropertiesSet()}方法
+     * @return
+     */
+    @Bean
+    @ConditionalOnMissingBean(JdbcQuery.class)
+    JdbcQuery jdbcQuery(){
+        return new JdbcQuery();
+    }
 
     /**
      * 注册{@link com.light.security.core.authentication.dao.jdbc.DaoProcessorManager}
@@ -44,6 +51,7 @@ public class JdbcDaoProcessorBeanConfiguration {
      * @return
      */
     @Bean
+    @ConditionalOnProperty(prefix = "light.security", name = "auth-type", havingValue = "simple")
     @ConditionalOnMissingBean(SimpleJdbcDaoProcessor.class)
     public SimpleJdbcDaoProcessor simpleJdbcDaoProcessor(DataSource dataSource){
         SimpleJdbcDaoProcessor simpleJdbcDaoProcessor = new SimpleJdbcDaoProcessor();
@@ -57,7 +65,7 @@ public class JdbcDaoProcessorBeanConfiguration {
      * @return
      */
     @Bean
-    @ConditionalOnProperty(name = {"light.security.authType"}, havingValue = "advance")
+    @ConditionalOnProperty(prefix = "light.security", name = "auth-type", havingValue = "advance")
     @ConditionalOnMissingBean(AdvanceJdbcDaoProcessor.class)
     public AdvanceJdbcDaoProcessor advanceJdbcDaoProcessor(DataSource dataSource){
         AdvanceJdbcDaoProcessor advanceJdbcDaoProcessor = new AdvanceJdbcDaoProcessor();
@@ -66,7 +74,7 @@ public class JdbcDaoProcessorBeanConfiguration {
     }
 
     @Bean
-    @ConditionalOnProperty(name = "light.security.authType", havingValue = "group")
+    @ConditionalOnProperty(prefix = "light.security", name = "auth-type", havingValue = "group")
     @ConditionalOnMissingBean(GroupJdbcDaoProcessor.class)
     public GroupJdbcDaoProcessor groupJdbcDaoProcessor(DataSource dataSource){
         GroupJdbcDaoProcessor groupJdbcDaoProcessor = new GroupJdbcDaoProcessor();

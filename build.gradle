@@ -57,7 +57,7 @@ allprojects {
         annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
         compile 'org.springframework.boot:spring-boot-starter-data-redis'
         compile 'org.projectlombok:lombok'
-        runtime 'org.postgresql:postgresql'
+//        runtime 'org.postgresql:postgresql'
         compile 'org.apache.commons:commons-lang3'
         testCompile 'org.springframework.boot:spring-boot-starter-test'
 

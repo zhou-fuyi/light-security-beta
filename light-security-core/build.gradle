@@ -1,5 +1,6 @@
 
 dependencies {
+    compile "${rootProject.ext.dependencies.mysql}"//仅仅为了测试
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

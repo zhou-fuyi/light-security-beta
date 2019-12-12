@@ -107,7 +107,7 @@ public class JdbcDaoProcessorManager implements DaoProcessorManager {
         }
 
         if (lastException == null){
-            lastException = new ProcessorNotFoundException(500, "找不到适应当前 CurrentAuthType 的 JdbcDaoProcessor");
+            lastException = new ProcessorNotFoundException(500, "找不到适应当前 CurrentAuthType --> " + currentAuthType + " 的 JdbcDaoProcessor");
         }
 
         throw lastException;

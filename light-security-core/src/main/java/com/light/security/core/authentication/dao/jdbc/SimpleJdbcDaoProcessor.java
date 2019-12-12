@@ -62,34 +62,38 @@ public class SimpleJdbcDaoProcessor extends AbstractJdbcProcessor{
         /**
          * 下面出现部分重复代码, 后面需要改进
          */
+        Integer parentId = rs.getInt("parentId") > 0 ? rs.getInt("parentId") : null;
         switch (authType){
             case "action":
                 authority = new ActionAuthority.Builder(rs.getInt("authId"), rs.getString("code"), rs.getString("pattern"))
                         .method("method")
-                        .parentId(rs.getInt("parentId"))
+                        .parentId(parentId)
                         .name(rs.getString("name"))
                         .desc(rs.getString("desc"))
                         .enabled(rs.getBoolean("enabled"))
                         .opened(rs.getBoolean("opened"))
+                        .type(rs.getString("type"))
                         .build();
                 break;
             case "menu":
                 authority = new MenuAuthority.Builder(rs.getInt("authId"), rs.getString("code"), rs.getString("link"))
                         .icon("icon")
-                        .parentId(rs.getInt("parentId"))
+                        .parentId(parentId)
                         .name(rs.getString("name"))
                         .desc(rs.getString("desc"))
                         .enabled(rs.getBoolean("enabled"))
                         .opened(rs.getBoolean("opened"))
+                        .type(rs.getString("type"))
                         .build();
                 break;
             case "element":
                 authority = new ElementAuthority.Builder(rs.getInt("authId"), rs.getString("code"))
-                        .parentId(rs.getInt("parentId"))
+                        .parentId(parentId)
                         .name(rs.getString("name"))
                         .desc(rs.getString("desc"))
                         .enabled(rs.getBoolean("enabled"))
                         .opened(rs.getBoolean("opened"))
+                        .type(rs.getString("type"))
                         .build();
                 break;
             default:
@@ -98,7 +102,10 @@ public class SimpleJdbcDaoProcessor extends AbstractJdbcProcessor{
         /**
          * 这里没有判断authority是否为空便直接作为参数构建role, 估计有bug
          */
-        Role role = new DefaultRole.Builder(rs.getInt("authId"), rs.getString("code"), Arrays.asList(authority)).build();
+        Role role = new DefaultRole.Builder(rs.getInt("roleId"), rs.getString("roleName"), new ArrayList<>(Arrays.asList(authority)))
+                .roleCode(rs.getString("roleCode"))
+                .roleDesc(rs.getString("roleDesc"))
+                .build();
         return role;
     }
 

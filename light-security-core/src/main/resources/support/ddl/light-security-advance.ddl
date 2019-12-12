@@ -84,6 +84,7 @@ create table action (
 	action_code varchar(100) not null comment 'API权限编码',
 	action_name varchar(100) not null comment 'API权限名称',
 	pattern varchar(500) not null comment 'API作用URL',
+	method varchar(10) comment 'API请求方法, {1: post, 2: get, 3: put, 4: delete, 5: head, 6: options ...}',
 	action_desc varchar(100) comment 'API权限描述',
 	enabled boolean not null default 0 comment '权限是否可用,  {1: true, 0: false}, 默认为false, 便是不可用',
 	opened boolean not null default 0 comment '是否为公共权限, {1: true, 0: false}, 默认为false, 便是非公共',

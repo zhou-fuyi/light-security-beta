@@ -56,7 +56,7 @@ public class AdvanceJdbcDaoProcessor extends AbstractAdditionJdbcProcessor {
                         List<Role> roles = new ArrayList<>();
                         while (rs.next()){
                             Authority authority = new SimpleAssistAuthority(rs.getInt("authId"), rs.getString("type"));
-                            Role role = new DefaultRole.Builder(rs.getInt("roleId"), rs.getString("roleName"), Arrays.asList(authority))
+                            Role role = new DefaultRole.Builder(rs.getInt("roleId"), rs.getString("roleName"), new ArrayList<>(Arrays.asList(authority)))
                                     .roleCode(rs.getString("roleCode"))
                                     .roleDesc(rs.getString("roleDesc"))
                                     .build();

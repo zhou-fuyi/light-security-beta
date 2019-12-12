@@ -5,6 +5,8 @@ import com.light.security.core.access.authority.GrantedAuthority;
 import com.light.security.core.access.model.ActionAuthority;
 import com.light.security.core.access.model.Authority;
 import com.light.security.core.access.model.Role;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
@@ -55,5 +57,10 @@ public abstract class AbstractGrantedRole implements GrantedRole {
             }
         }
         return actionAuthorities;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }
