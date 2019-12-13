@@ -1,7 +1,10 @@
 package com.light.security.core.config.configuration;
 
+import com.light.security.core.cache.context.concurrent.SecurityMetadataSourceContextCache;
 import com.light.security.core.cache.context.concurrent.SupportExpiredAuthenticatedContextCache;
 import com.light.security.core.cache.holder.AuthenticatedContextCacheHolder;
+import com.light.security.core.cache.holder.SecurityMetadataSourceContextCacheHolder;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,8 +22,15 @@ public class CacheHolderBeanConfiguration {
      * @return
      */
     @Bean
+    @ConditionalOnMissingBean(AuthenticatedContextCacheHolder.class)
     public AuthenticatedContextCacheHolder authenticatedContextCacheHolder(){
         return new AuthenticatedContextCacheHolder(new SupportExpiredAuthenticatedContextCache());
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(SecurityMetadataSourceContextCacheHolder.class)
+    public SecurityMetadataSourceContextCacheHolder securityMetadataSourceContextCacheHolder(){
+        return new SecurityMetadataSourceContextCacheHolder(new SecurityMetadataSourceContextCache());
     }
 
 }

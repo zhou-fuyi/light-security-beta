@@ -1,6 +1,5 @@
 package com.light.security.core.config.core;
 
-import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.Aware;

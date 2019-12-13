@@ -2,6 +2,7 @@ package com.light.security.core.cache.listener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -21,7 +22,15 @@ public abstract class AbstractCacheContextListener implements ServletContextList
         if (logger.isDebugEnabled()){
             logger.debug("启动 ServletContextListener");
         }
-        loadCache(sce);
+        try {
+            loadCache(sce);
+        } catch (Exception e) {
+            if (logger.isErrorEnabled()){
+                logger.error("缓存加载异常:{}", e);
+            }else {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -35,5 +44,7 @@ public abstract class AbstractCacheContextListener implements ServletContextList
      * 加载缓存
      * @param servletContextEvent
      */
-    protected abstract void loadCache(ServletContextEvent servletContextEvent);
+    protected void loadCache(ServletContextEvent servletContextEvent) throws Exception {
+        logger.warn("请实现自己的权限元数据的加载逻辑");
+    }
 }

@@ -51,6 +51,7 @@ public class ElementAuthorityDaoProcessor extends AbstractAuthorityDaoProcessor 
                                     .build();
                             authorities.add(authority);
                         }
+                        postHandler(authorities);
                         return authorities;
                     }
                 });

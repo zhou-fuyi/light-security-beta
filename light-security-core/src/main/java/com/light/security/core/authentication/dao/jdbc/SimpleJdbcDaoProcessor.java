@@ -8,10 +8,7 @@ import org.springframework.util.StringUtils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * @ClassName SimpleJdbcDaoProcessor
@@ -37,6 +34,7 @@ public class SimpleJdbcDaoProcessor extends AbstractJdbcProcessor{
                     while (rs.next()){
                         roles.add(loadRole(rs));
                     }
+                    postHandler(roles);
                     return comparatorAndTransformToGrantedRoleList(roles);
                 });
     }
@@ -50,6 +48,25 @@ public class SimpleJdbcDaoProcessor extends AbstractJdbcProcessor{
     public void autoInitTable(Enum authType) throws Exception {
 //        createTable(SIMPLE_DDL_QUERY_FILENAME, authType);
         createTableWithSqlFile(authType);
+    }
+
+    @Override
+    protected <T> void postHandler(List<T> list) {
+        List<Role> roles = (List<Role>) list;
+        Iterator<Role> roleIterator = roles.iterator();
+        while (roleIterator.hasNext()){
+            List<Authority> authorities = (List<Authority>) roleIterator.next().getAuthorities();
+            Iterator<Authority> authorityIterator = authorities.iterator();
+            while (authorityIterator.hasNext()){
+                Authority authority = authorityIterator.next();
+                if (!authority.isEnabled()){
+                    authorityIterator.remove();
+                }
+            }
+            if (authorities.size() == 0){
+                roleIterator.remove();
+            }
+        }
     }
 
     private Role loadRole(ResultSet rs) throws SQLException {

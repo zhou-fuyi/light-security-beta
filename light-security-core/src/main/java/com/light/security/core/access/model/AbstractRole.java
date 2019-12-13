@@ -61,7 +61,8 @@ public abstract class AbstractRole extends BaseEntity implements Role {
 
     @Override
     public Collection<? extends Authority> getAuthorities() {
-        return Collections.unmodifiableCollection(authorities);
+//        return Collections.unmodifiableCollection(authorities);
+        return authorities;
     }
 
     @Override

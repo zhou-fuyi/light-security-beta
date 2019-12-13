@@ -30,6 +30,12 @@ public class ActionAuthorityDaoProcessor extends AbstractAuthorityDaoProcessor  
         super(dataSource, SUPPORT_AUTHORITY_TYPE);
     }
 
+    // TODO: 2019-12-13 方法待优化
+    /**
+     * 该方法的实现不够优雅, 待修改
+     * @param assistAuthorities
+     * @return
+     */
     @Override
     public List<Authority> loadAuthorities(List<AssistAuthority> assistAuthorities) {
         List<Integer> assistAuthorityIds = assistAuthorities.stream().map(AssistAuthority::getAuthorityId).collect(Collectors.toList());
@@ -51,6 +57,7 @@ public class ActionAuthorityDaoProcessor extends AbstractAuthorityDaoProcessor  
                                     .build();
                             authorities.add(authority);
                         }
+                        postHandler(authorities);
                         return authorities;
                     }
                 });

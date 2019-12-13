@@ -35,6 +35,12 @@ public class JdbcQuery implements InitializingBean {
             "\tleft join role c on b.role_id = c.id" +
             "\tleft join role_authority d on c.id = d.role_id" +
             "\tleft join authority e on d.authority_id = e.id";
+
+    private final static String SIMPLE_DEF_SECURITY_METADATA_ON_STARTUP_QUERY = "select" +
+            "\ta.id authId, a.type type, a.parent_id parentId, a.authority_code `code`" +
+            "\t, a.authority_name `name`, a.authority_desc `desc`, a.pattern pattern" +
+            "\t, a.method method, a.enabled enabled, a.opened opened" +
+            "\tfrom authority a where type = ?";
     // SIMPLE_TYPE end
 //    ===================================================================================================================================================================
 
@@ -84,6 +90,15 @@ public class JdbcQuery implements InitializingBean {
 
     private final static String ADVANCE_DEF_AUTHORITY_QUERY_IN_KEY = "auth_ids";
 
+    private final static String ADVANCE_DEF_SECURITY_METADATA_ON_STARTUP_QUERY = "select" +
+            "\ta.type type" +
+            "\t, c.id authId, c.parent_id parentId, c.action_code `code`" +
+            "\t, c.action_name `name`, c.action_desc `desc`, c.pattern pattern" +
+            "\t, c.method method, c.enabled enabled, c.opened opened" +
+            "\tfrom (select * from authority where type = ?) a" +
+            "\tleft join authority_action b on a.id = b.authority_id" +
+            "\tleft join action c on b.action_id = c.id";
+
     static {
         /**
          * 构建简单模式的权限查询
@@ -91,6 +106,7 @@ public class JdbcQuery implements InitializingBean {
         Map<String, String> SIMPLE_QUERY_MAP = new HashMap<>();
         SIMPLE_QUERY_MAP.put(QueryKey.DEF_SUBJECTS_BY_SUBJECT_NAME_QUERY.name(), SIMPLE_DEF_SUBJECTS_BY_SUBJECT_NAME_QUERY);
         SIMPLE_QUERY_MAP.put(QueryKey.DEF_AUTHORITIES_BY_SUBJECT_ID_QUERY.name(), SIMPLE_DEF_AUTHORITIES_BY_SUBJECT_ID_QUERY);
+        SIMPLE_QUERY_MAP.put(QueryKey.DEF_SECURITY_METADATA_ON_STARTUP_QUERY.name(), SIMPLE_DEF_SECURITY_METADATA_ON_STARTUP_QUERY);
         DEFAULT_QUERY.put(SecurityProperties.AuthTypeEnum.SIMPLE.name(), SIMPLE_QUERY_MAP);
 
         /**
@@ -105,6 +121,7 @@ public class JdbcQuery implements InitializingBean {
         ADVANCE_QUERY_MAP.put(QueryKey.DEF_MENU_AUTHORITIES_QUERY_BATCH.name(), ADVANCE_DEF_MENU_AUTHORITIES_QUERY_BATCH);
         ADVANCE_QUERY_MAP.put(QueryKey.DEF_ELEMENT_AUTHORITIES_QUERY_BATCH.name(), ADVANCE_DEF_ELEMENT_AUTHORITIES_QUERY_BATCH);
         ADVANCE_QUERY_MAP.put(QueryKey.DEF_AUTHORITY_QUERY_IN_KEY.name(), ADVANCE_DEF_AUTHORITY_QUERY_IN_KEY);
+        ADVANCE_QUERY_MAP.put(QueryKey.DEF_SECURITY_METADATA_ON_STARTUP_QUERY.name(), ADVANCE_DEF_SECURITY_METADATA_ON_STARTUP_QUERY);
         DEFAULT_QUERY.put(SecurityProperties.AuthTypeEnum.ADVANCE.name(), ADVANCE_QUERY_MAP);
     }
 
@@ -156,5 +173,7 @@ public class JdbcQuery implements InitializingBean {
          * 用于表示JdbcTemplate中使用in表达式时 key 值
          */
         DEF_AUTHORITY_QUERY_IN_KEY,
+
+        DEF_SECURITY_METADATA_ON_STARTUP_QUERY,
     }
 }

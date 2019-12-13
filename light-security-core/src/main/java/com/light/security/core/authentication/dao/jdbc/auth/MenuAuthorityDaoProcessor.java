@@ -50,6 +50,7 @@ public class MenuAuthorityDaoProcessor extends AbstractAuthorityDaoProcessor {
                                     .build();
                             authorities.add(authority);
                         }
+                        postHandler(authorities);
                         return authorities;
                     }
                 });

@@ -1,5 +1,6 @@
 package com.light.security.core.authentication.dao.jdbc;
 
+import com.light.security.core.access.model.Authority;
 import com.light.security.core.access.role.GrantedRole;
 import com.light.security.core.authentication.subject.SubjectDetail;
 import com.light.security.core.exception.AuthenticationException;
@@ -43,6 +44,13 @@ public interface JdbcDaoProcessor {
      * @return
      */
     Collection<GrantedRole> loadGroupAuthorities(Integer subjectId);
+
+
+    /**
+     * 用于获取系统内需要拦截处理的所有权限, 一般情况下皆为API权限
+     * @return
+     */
+    Collection<Authority> loadSecurityMetadataOnStartup() throws Exception;
 
     /**
      * 可以实现该方法, 用于创建表

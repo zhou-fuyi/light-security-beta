@@ -2,7 +2,7 @@
 spring:
   # 环境配置：simple|advance
   profiles:
-    active: advance
+    active: simple
 
 logging:
   config: classpath:logback-dev.xml

@@ -1,10 +1,12 @@
 package com.light.security.core.authentication.dao.jdbc;
 
+import com.light.security.core.access.model.ActionAuthority;
 import com.light.security.core.access.model.Authority;
 import com.light.security.core.access.model.Role;
 import com.light.security.core.access.role.DefaultGrantRole;
 import com.light.security.core.access.role.GrantedRole;
 import com.light.security.core.authentication.SubjectDetailService;
+import com.light.security.core.authentication.dao.jdbc.auth.AuthorityTypeEnum;
 import com.light.security.core.authentication.subject.Subject;
 import com.light.security.core.authentication.subject.SubjectDetail;
 import com.light.security.core.exception.AuthenticationException;
@@ -17,6 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.EncodedResource;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -164,6 +168,35 @@ public abstract class AbstractJdbcProcessor extends JdbcDaoSupport implements Jd
         throw new InternalAuthenticationServiceException(500, "暂时不支持组概念");
     }
 
+    /**
+     * 默认查询API权限, 子类可以重写该方法实现自己的逻辑
+     * @return
+     */
+    @Override
+    public Collection<Authority> loadSecurityMetadataOnStartup() throws Exception {
+        return getJdbcTemplate().query(JdbcQuery.getQuery(JdbcQuery.QueryKey.DEF_SECURITY_METADATA_ON_STARTUP_QUERY.name())
+                , new Object[]{AuthorityTypeEnum.ACTION.name()}, new ResultSetExtractor<Collection<Authority>>() {
+                    @Override
+                    public Collection<Authority> extractData(ResultSet rs) throws SQLException, DataAccessException {
+                        List<Authority> securityMetadata = new ArrayList<>();
+                        while (rs.next()){
+                            //自增Id不能从0开始
+                            Integer parentId = rs.getInt("parentId") > 0 ? rs.getInt("parentId") : null;
+                            Authority authority = new ActionAuthority.Builder(rs.getInt("authId"), rs.getString("code"), rs.getString("pattern"))
+                                    .method(rs.getString("method"))
+                                    .type(rs.getString("type"))
+                                    .parentId(parentId)
+                                    .name(rs.getString("name"))
+                                    .desc(rs.getString("desc"))
+                                    .enabled(rs.getBoolean("enabled"))
+                                    .opened(rs.getBoolean("opened"))
+                                    .build();
+                            securityMetadata.add(authority);
+                        }
+                        return securityMetadata;
+                    }
+                });
+    }
 
     @Override
     public void autoInitTable(Enum authType) throws Exception {
@@ -249,6 +282,16 @@ public abstract class AbstractJdbcProcessor extends JdbcDaoSupport implements Jd
      */
     protected void createTableWithSqlFile(Enum currentAuthType) throws Exception {
         createTableWithSqlFile(this.ddlQueryFilename, currentAuthType);
+    }
+
+    /**
+     * 后处理器, 目前主要是在{@link SimpleJdbcDaoProcessor}中进行了重写, 用于处理权限中 enabled = false 的情况
+     * @param list
+     * @param <T>
+     * @return
+     */
+    protected <T> void postHandler(List<T> list){
+
     }
 
     /**

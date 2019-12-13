@@ -4,6 +4,7 @@ import com.light.security.core.authentication.SubjectDetailService;
 import com.light.security.core.authentication.dao.jdbc.JdbcDaoProcessorManager;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -12,7 +13,8 @@ import org.springframework.context.annotation.Bean;
  * @Author ZhouJian
  * @Date 2019-12-12
  */
-@SpringBootApplication
+//@ServletComponentScan
+//@SpringBootApplication
 public class LightSecurityCoreApplication {
 
     public static void main(String[] args){
