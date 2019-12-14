@@ -71,7 +71,7 @@ public class FilterChainProxy extends GenericFilter {
     }
 
     @Override
-    protected void genericInit() {
+    public void genericInit() {
         Assert.notNull(securityContextHolder, "SecurityContextHolder 不能为null");
         filterChainValidator.validate(this);
     }

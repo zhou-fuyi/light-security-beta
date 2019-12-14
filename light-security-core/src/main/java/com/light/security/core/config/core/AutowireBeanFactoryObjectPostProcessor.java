@@ -24,6 +24,11 @@ import java.util.List;
  * 允许注册对象参与{@link AutowireCapableBeanFactory}对{@link Aware}方法，
  * {@ link InitializingBean＃afterPropertiesSet（）}和{@link DisposableBean＃destroy（）}的后期处理。
  *
+ *
+ * 注意: 核心便是 --> 使得IOC容器外的Bean可以使用依賴注入——AutowireCapableBeanFactory
+ *
+ * 简单理解 --> 便是使得没有被IOC容器管理的但是已经实例化的Bean可以使用IOC容器的依赖注入(如@Autowired)能力
+ *
  * @Author ZhouJian
  * @Date 2019-12-03
  */
@@ -53,12 +58,20 @@ public class AutowireBeanFactoryObjectPostProcessor implements ObjectPostProcess
         }
         T result = null;
         try {
+            /**
+             * 这里会调用{@link InitializingBean#afterPropertiesSet()}方法, 所以如果你使用这样的方式进行依赖注入, 千万不要在
+             * {@link InitializingBean#afterPropertiesSet()}方法中验证待注入对象的可用性(比如不能为null验证), 因为这个方法会在
+             * 尝试依赖注入前被调用
+             */
             result = (T) this.autowireBeanFactory.initializeBean(object, object.toString());
         }
         catch (RuntimeException e) {
             Class<?> type = object.getClass();
             throw new RuntimeException("Could not postProcess " + object + " of type " + type, e);
         }
+        /**
+         * 这里便是处理 object 的依赖注入问题
+         */
         this.autowireBeanFactory.autowireBean(object);
         if (result instanceof DisposableBean) {
             this.disposableBeans.add((DisposableBean) result);

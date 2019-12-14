@@ -9,6 +9,8 @@ import com.light.security.core.cache.holder.AuthenticatedContextCacheHolder;
 import com.light.security.core.cache.model.InternalExpiredValueWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
  * @Author ZhouJian
  * @Date 2019-11-25
  */
-public class InternalSecurityContextRepository implements SecurityContextRepository {
+public class InternalSecurityContextRepository implements SecurityContextRepository, InitializingBean {
 
     protected Logger logger = LoggerFactory.getLogger(getClass());
     private static final String DEFAULT_TOKEN_FIELD_NAME = "_auth";
@@ -123,5 +125,11 @@ public class InternalSecurityContextRepository implements SecurityContextReposit
     @Override
     public boolean containsContext(HttpServletRequest request) {
         return false;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        Assert.notNull(securityContextHolder, "SecurityContextHolder 不能为null");
+        Assert.notNull(authenticatedContextCacheHolder, "AuthenticatedContextCacheHolder 不能为null");
     }
 }

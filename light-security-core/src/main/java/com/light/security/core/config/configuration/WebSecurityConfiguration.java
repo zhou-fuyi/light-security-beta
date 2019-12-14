@@ -1,5 +1,6 @@
 package com.light.security.core.config.configuration;
 
+import com.light.security.core.authentication.context.holder.SecurityContextHolder;
 import com.light.security.core.config.AbstractSecurityWebApplicationInitializer;
 import com.light.security.core.config.core.ObjectPostProcessor;
 import com.light.security.core.config.core.SecurityConfigurer;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.OrderComparator;
@@ -40,6 +42,12 @@ public class WebSecurityConfiguration implements BeanClassLoaderAware {
     @Autowired(required = false)
     private ObjectPostProcessor<Object> objectPostProcessor;
 
+    @Autowired
+    private ApplicationContext context;
+
+    @Autowired
+    private SecurityContextHolder securityContextHolder;
+
     /**
      * 在这里初始化了AutowiredWebSecurityConfigurersIgnoreParents并交由Spring进行管理
      * @param configurableListableBeanFactory
@@ -66,6 +74,7 @@ public class WebSecurityConfiguration implements BeanClassLoaderAware {
             });
             chainProxyBuilder.apply(defaultConfigurer);
         }
+//        Filter lightSecurityFilterChain = chainProxyBuilder.build();
         return chainProxyBuilder.build();
     }
 
@@ -78,10 +87,10 @@ public class WebSecurityConfiguration implements BeanClassLoaderAware {
     @Autowired(required = false)
     public void setChainProxyBuilderConfigurers(
             ObjectPostProcessor<Object> objectPostProcessor,
-            @Value("#{@autowiredWebSecurityConfigurersIgnoreParents.getWebSecurityConfigurers()}") List<SecurityConfigurer<Filter, ChainProxyBuilder>> webSecurityConfigurers) throws Exception {
+            @Value("#{@autowiredWebSecurityConfigurersIgnoreParents.getWebSecurityConfigurers()}") List<SecurityConfigurer<Filter, ChainProxyBuilder>> webSecurityConfigurers ) throws Exception {
 
         // 创建一个chainProxyBuilder对象
-        chainProxyBuilder = objectPostProcessor.postProcess(new ChainProxyBuilder(objectPostProcessor));
+        chainProxyBuilder = objectPostProcessor.postProcess(new ChainProxyBuilder(objectPostProcessor, securityContextHolder));
 
         //对webSecurityConfigurers进行排序
         Collections.sort(webSecurityConfigurers, AnnotationAwareOrderComparator.INSTANCE);

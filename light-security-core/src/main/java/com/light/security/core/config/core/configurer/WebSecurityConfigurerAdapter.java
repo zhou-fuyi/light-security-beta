@@ -2,6 +2,7 @@ package com.light.security.core.config.core.configurer;
 
 import com.light.security.core.authentication.*;
 import com.light.security.core.authentication.context.holder.SecurityContextHolder;
+import com.light.security.core.authentication.context.repository.SecurityContextRepository;
 import com.light.security.core.authentication.subject.SubjectDetail;
 import com.light.security.core.authentication.token.Authentication;
 import com.light.security.core.config.configuration.AuthenticationConfiguration;
@@ -96,6 +97,9 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     private SecurityContextHolder securityContextHolder;
 
     @Autowired
+    private SecurityContextRepository securityContextRepository;
+
+    @Autowired
     public void setApplicationContext(ApplicationContext applicationContext){
         this.context = applicationContext;
     }
@@ -186,7 +190,8 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
          */
         if (!disableDefaults){
             httpSecurityBuilder.cors().and()
-                    .securityContext(securityContextHolder).and()
+                    .authorize().and()
+                    .securityContext(securityContextHolder).securityContextRepository(securityContextRepository).and()
                     .formLogin(securityContextHolder).and()
                     .exceptionTranslation(securityContextHolder);
 
@@ -211,6 +216,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
         sharedObjects.put(SubjectDetailService.class, subjectDetailService());
         sharedObjects.put(ApplicationContext.class, context);
         sharedObjects.put(AuthenticationTrustResolver.class, trustResolver);
+        sharedObjects.put(SecurityContextHolder.class, securityContextHolder);
         return sharedObjects;
     }
 
@@ -342,8 +348,9 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
      */
     protected void configure(HttpSecurityBuilder builder) throws Exception {
         logger.debug("使用默认的configure（HttpSecurityBuilder）. 如果是子类，则可能会覆盖子类configure（HttpSecurityBuilder）.");
-        httpSecurityBuilder.cors().and()
-                .securityContext(securityContextHolder).and()
+        builder.cors().and()
+                .authorize().and()
+                .securityContext(securityContextHolder).securityContextRepository(securityContextRepository).and()
                 .formLogin(securityContextHolder).and()
                 .exceptionTranslation(securityContextHolder);
     }

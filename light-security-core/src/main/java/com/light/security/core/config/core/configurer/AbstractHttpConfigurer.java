@@ -4,6 +4,8 @@ import com.light.security.core.config.core.ObjectPostProcessor;
 import com.light.security.core.config.core.SecurityConfigurerAdapter;
 import com.light.security.core.config.core.builder.FilterChainBuilder;
 import com.light.security.core.filter.chain.DefaultSecurityFilterChain;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @ClassName AbstractHttpConfigurer
@@ -12,6 +14,8 @@ import com.light.security.core.filter.chain.DefaultSecurityFilterChain;
  * @Date 2019-12-03
  */
 public abstract class AbstractHttpConfigurer<T extends AbstractHttpConfigurer<T, B>, B extends FilterChainBuilder<B>> extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, B> {
+
+    protected Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * Disables the {@link AbstractHttpConfigurer} by removing it. After doing so a fresh version of the configuration can be applied.

@@ -7,4 +7,9 @@ spring:
 logging:
   config: classpath:logback-dev.xml
 
-
+# actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,beans

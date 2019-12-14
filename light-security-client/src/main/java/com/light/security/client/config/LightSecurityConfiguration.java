@@ -1,7 +1,14 @@
 package com.light.security.client.config;
 
+import com.light.security.core.access.AccessDecisionManager;
+import com.light.security.core.access.vote.AuthorityAccessDecisionManager;
+import com.light.security.core.access.vote.AuthorityVoter;
 import com.light.security.core.config.core.configurer.WebSecurityConfigurerAdapter;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * @ClassName LightSecurityConfiguration
@@ -15,4 +22,13 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class LightSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    /**
+     * 测试{@link com.light.security.core.config.core.AutowireBeanFactoryObjectPostProcessor}使用
+     * @return
+     */
+//    @Bean
+//    public AccessDecisionManager accessDecisionManager(){
+//        return new AuthorityAccessDecisionManager(new ArrayList<>(Arrays.asList(new AuthorityVoter())));
+//    }
 }

@@ -4,6 +4,7 @@ import com.light.security.core.access.AuthenticationProvider;
 import com.light.security.core.authentication.AuthenticationManager;
 import com.light.security.core.authentication.SubjectDetailService;
 import com.light.security.core.authentication.context.holder.SecurityContextHolder;
+import com.light.security.core.config.SecurityInterceptorConfigurer;
 import com.light.security.core.config.core.AbstractConfiguredSecurityBuilder;
 import com.light.security.core.config.core.ObjectPostProcessor;
 import com.light.security.core.config.core.SecurityBuilder;
@@ -68,6 +69,16 @@ public class HttpSecurityBuilder extends AbstractConfiguredSecurityBuilder<Defau
      */
     public CorsConfigurer<HttpSecurityBuilder> cors() throws Exception{
         return getOrApply(new CorsConfigurer<HttpSecurityBuilder>());
+    }
+
+    /**
+     * 配置{@link com.light.security.core.filter.FilterSecurityInterceptor}
+     * @return
+     * @throws Exception
+     */
+    public SecurityInterceptorConfigurer<HttpSecurityBuilder> authorize() throws Exception{
+        return getOrApply(postProcess(new SecurityInterceptorConfigurer<HttpSecurityBuilder>()));
+//        return getOrApply(new SecurityInterceptorConfigurer<HttpSecurityBuilder>());
     }
 
     /**

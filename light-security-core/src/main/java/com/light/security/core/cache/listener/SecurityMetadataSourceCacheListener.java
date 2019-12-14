@@ -18,6 +18,7 @@ import com.light.security.core.config.core.configurer.WebSecurityConfigurerAdapt
 import com.light.security.core.exception.ProcessorNotFoundException;
 import com.light.security.core.properties.SecurityProperties;
 import com.light.security.core.util.matcher.AntPathRequestMatcher;
+import com.light.security.core.util.matcher.AnyRequestMatcher;
 import com.light.security.core.util.matcher.OrRequestMatcher;
 import com.light.security.core.util.matcher.RequestMatcher;
 import org.springframework.beans.BeansException;
@@ -89,19 +90,13 @@ public class SecurityMetadataSourceCacheListener extends AbstractCacheContextLis
             if (processor.support(currentSecurityMode)){
                 try {
                     securityMetadata = processor.loadSecurityMetadataOnStartup();
-                    if (securityMetadata != null && securityMetadata.size() == 0){
-                        if (logger.isWarnEnabled()){
-                            logger.warn("当前数据库中权限数据为空, 请尽快填写权限（action权限）数据, 避免后续授权过程引发异常");
-                        }
-                        return;
-                    }
                 } catch (Exception e) {
                     lastException = e;
                 }
                 break;
             }
         }
-        if (!CollectionUtils.isEmpty(securityMetadata)){
+        if (securityMetadata != null){
             transformToSecurityMetadataSources(securityMetadata);
             return;
         }
@@ -118,6 +113,8 @@ public class SecurityMetadataSourceCacheListener extends AbstractCacheContextLis
                 securityMetadataSourceContextCacheHolder.put(getRequestMatcher(authority), new ArrayList<>(Arrays.asList(new AuthorityAttribute(authority.getAuthorityPoint()))));
             });
         }
+        // TODO: 2019/12/14 魔法值待优化
+        securityMetadataSourceContextCacheHolder.put(AnyRequestMatcher.INSTANCE, new ArrayList<>(Arrays.asList(new AuthorityAttribute("_authenticated"))));
         logger.info("SecurityMetadataContext is {}",securityMetadataSourceContextCacheHolder.getCache().getContext());
         securityMetadataSourceContextCacheHolder.getCache().getContext().forEach((key, value) -> {
             logger.debug("key is {} and the value is {}", key, value.iterator().next());
@@ -125,6 +122,12 @@ public class SecurityMetadataSourceCacheListener extends AbstractCacheContextLis
     }
 
     private Collection<Authority> preHandler(Collection<Authority> authorities){
+        if (authorities.size() == 0){
+            if (logger.isWarnEnabled()){
+                logger.warn("当前数据库中权限数据为空, 请尽快填写权限（action权限）数据, 避免后续授权过程引发异常");
+            }
+            return authorities;
+        }
         Collection<Authority> openedAuthorities = new ArrayList<>();
         final int authoritiesSize = authorities.size();
         Iterator<Authority> iterator = authorities.iterator();

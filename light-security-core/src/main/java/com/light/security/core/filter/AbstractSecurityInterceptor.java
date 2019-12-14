@@ -40,6 +40,11 @@ public abstract class AbstractSecurityInterceptor implements InitializingBean {
     private SecurityContextHolder securityContextHolder;
 
     /**
+     * 拒绝公共调用
+     */
+    private boolean rejectPublicInvocations = false;
+
+    /**
      * 访问控制决策管理器
      */
     private AccessDecisionManager accessDecisionManager;
@@ -51,6 +56,32 @@ public abstract class AbstractSecurityInterceptor implements InitializingBean {
     private boolean publishAuthorizationSuccess = true;
 
     private AuthenticationManager authenticationManager;
+
+    protected AbstractSecurityInterceptor(){}
+
+    public void setEventPublisher(ApplicationEventPublisher eventPublisher) {
+        this.eventPublisher = eventPublisher;
+    }
+
+    public void setSecurityContextHolder(SecurityContextHolder securityContextHolder) {
+        this.securityContextHolder = securityContextHolder;
+    }
+
+    public void setAccessDecisionManager(AccessDecisionManager accessDecisionManager) {
+        this.accessDecisionManager = accessDecisionManager;
+    }
+
+    public void setAlwaysReauthenticate(boolean alwaysReauthenticate) {
+        this.alwaysReauthenticate = alwaysReauthenticate;
+    }
+
+    public void setPublishAuthorizationSuccess(boolean publishAuthorizationSuccess) {
+        this.publishAuthorizationSuccess = publishAuthorizationSuccess;
+    }
+
+    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
+    }
 
     /**
      * 检查authentication的状态, 并且根据 alwaysReauthenticate 判断是否重新认证
@@ -84,7 +115,7 @@ public abstract class AbstractSecurityInterceptor implements InitializingBean {
      * @param object
      * @param attributes
      */
-    private void credentialsNotFound(String reason, Object object, Collection<ConfigAttribute> attributes){
+    private void credentialsNotFound(String reason, Object object, Collection<ConfigAttribute> attributes) {
         AuthenticationCredentialsNotFoundException exception = new AuthenticationCredentialsNotFoundException(401, reason);
         AuthenticationCredentialsNotFoundEvent event = new AuthenticationCredentialsNotFoundEvent(object, attributes, exception);
         publishEvent(event);
@@ -102,7 +133,7 @@ public abstract class AbstractSecurityInterceptor implements InitializingBean {
      * @param object
      * @return
      */
-    protected AuthorizationStatusToken beforeInvocation(Object object){
+    protected AuthorizationStatusToken beforeInvocation(Object object) {
         Assert.notNull(object, "Object is null");
         boolean debug = logger.isDebugEnabled();
         if (!getSecureObjectClass().isAssignableFrom(object.getClass())) {
@@ -114,8 +145,13 @@ public abstract class AbstractSecurityInterceptor implements InitializingBean {
         }
         Collection<ConfigAttribute> attributes = this.obtainSecurityMetadataSource().getAttributes(object);
         if (CollectionUtils.isEmpty(attributes)){
+
+            if (rejectPublicInvocations){
+                throw new IllegalArgumentException("不允许进行公共调用");
+            }
+
             if (debug) {
-                logger.debug("公共安全对象, 未尝试认证, 当前请求匹配权限为空");
+                logger.debug("未尝试权限验证, 因为当前请求匹配权限为空");
             }
             publishEvent(new PublicInvocationEvent(object));
             return null;

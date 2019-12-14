@@ -1,7 +1,7 @@
 package com.light.security.core.cache.holder;
 
 import com.light.security.core.access.ConfigAttribute;
-import com.light.security.core.cache.context.concurrent.SecurityMetadataSourceContextCache;
+import com.light.security.core.cache.context.linked.SecurityMetadataSourceContextCache;
 import com.light.security.core.util.matcher.RequestMatcher;
 
 import java.util.Collection;
@@ -12,7 +12,7 @@ import java.util.Collection;
  * @Author ZhouJian
  * @Date 2019-11-28
  */
-public class SecurityMetadataSourceContextCacheHolder extends AbstractInternalConcurrentContextCacheHolder<RequestMatcher, Collection<ConfigAttribute>> {
+public class SecurityMetadataSourceContextCacheHolder extends AbstractInternalLinkedContextCacheHolder<RequestMatcher, Collection<ConfigAttribute>> {
 
     public SecurityMetadataSourceContextCacheHolder(SecurityMetadataSourceContextCache cache) {
         super(cache);

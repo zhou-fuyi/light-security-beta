@@ -1,7 +1,7 @@
 package com.light.security.core.config.configuration;
 
-import com.light.security.core.cache.context.concurrent.SecurityMetadataSourceContextCache;
 import com.light.security.core.cache.context.concurrent.SupportExpiredAuthenticatedContextCache;
+import com.light.security.core.cache.context.linked.SecurityMetadataSourceContextCache;
 import com.light.security.core.cache.holder.AuthenticatedContextCacheHolder;
 import com.light.security.core.cache.holder.SecurityMetadataSourceContextCacheHolder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

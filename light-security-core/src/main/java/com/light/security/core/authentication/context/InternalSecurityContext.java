@@ -7,4 +7,9 @@ package com.light.security.core.authentication.context;
  * @Date 2019-11-22
  */
 public class InternalSecurityContext extends AbstractThreadLocalContext<SecurityContext> {
+
+    @Override
+    public SecurityContext createEmptyContent() {
+        return new DefaultSecurityContext();
+    }
 }

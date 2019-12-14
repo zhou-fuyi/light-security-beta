@@ -1,8 +1,10 @@
 package com.light.security.core.config.core.builder;
 
+import com.light.security.core.authentication.context.holder.SecurityContextHolder;
 import com.light.security.core.config.core.AbstractConfiguredSecurityBuilder;
 import com.light.security.core.config.core.ObjectPostProcessor;
 import com.light.security.core.config.core.SecurityBuilder;
+import com.light.security.core.filter.FilterChainProxy;
 import com.light.security.core.filter.FilterSecurityInterceptor;
 import com.light.security.core.filter.chain.DefaultSecurityFilterChain;
 import com.light.security.core.filter.chain.SecurityFilterChain;
@@ -52,6 +54,8 @@ import java.util.List;
  */
 public final class ChainProxyBuilder extends AbstractConfiguredSecurityBuilder<Filter, ChainProxyBuilder> implements SecurityBuilder<Filter>, ApplicationContextAware {
 
+    private SecurityContextHolder securityContextHolder;
+
     /**
      * 用于保存{@link #ignoredRequestRegistry}注册的{@link RequestMatcher}
      */
@@ -89,8 +93,9 @@ public final class ChainProxyBuilder extends AbstractConfiguredSecurityBuilder<F
         }
     };
 
-    public ChainProxyBuilder(ObjectPostProcessor<Object> objectPostProcessor) {
+    public ChainProxyBuilder(ObjectPostProcessor<Object> objectPostProcessor, SecurityContextHolder securityContextHolder) {
         super(objectPostProcessor);
+        this.securityContextHolder = securityContextHolder;
     }
 
     /**
@@ -218,8 +223,15 @@ public final class ChainProxyBuilder extends AbstractConfiguredSecurityBuilder<F
             securityFilterChains.add(securityFilterChainBuilder.build());
         }
 
-        // TODO: 2019-12-04 按顺序往下，到这里了，创建包装了List<SecurityFilterChain>的FilterChainProxy对象
-        return null;
+        /**
+         * 创建包装了List<SecurityFilterChain>的FilterChainProxy对象
+         */
+        FilterChainProxy filterChainProxy = new FilterChainProxy(securityFilterChains);
+        filterChainProxy.setSecurityContextHolder(this.securityContextHolder);
+//        filterChainProxy.genericInit();
+        Filter target = filterChainProxy;
+        postBuildAction.run();
+        return target;
     }
 
 

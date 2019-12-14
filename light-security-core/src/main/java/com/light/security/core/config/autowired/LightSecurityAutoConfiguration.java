@@ -8,7 +8,11 @@ import com.light.security.core.access.model.tree.builder.manager.TreeBuilderMana
 import com.light.security.core.authentication.AuthenticationManager;
 import com.light.security.core.authentication.DefaultAuthenticationEventPublisher;
 import com.light.security.core.authentication.context.InternalSecurityContext;
+import com.light.security.core.authentication.context.SecurityContext;
 import com.light.security.core.authentication.context.holder.SecurityContextHolder;
+import com.light.security.core.authentication.context.repository.InternalSecurityContextRepository;
+import com.light.security.core.authentication.context.repository.SecurityContextRepository;
+import com.light.security.core.cache.holder.AuthenticatedContextCacheHolder;
 import com.light.security.core.config.core.configurer.GlobalAuthenticationConfigurerAdapter;
 import com.light.security.core.properties.SecurityProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -92,6 +96,15 @@ public class LightSecurityAutoConfiguration {
     @ConditionalOnMissingBean(SecurityContextHolder.class)
     public SecurityContextHolder securityContextHolder(){
         return new SecurityContextHolder(new InternalSecurityContext());
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(SecurityContextRepository.class)
+    public SecurityContextRepository securityContextRepository(SecurityContextHolder securityContextHolder, AuthenticatedContextCacheHolder authenticatedContextCacheHolder){
+        InternalSecurityContextRepository securityContextRepository = new InternalSecurityContextRepository();
+        securityContextRepository.setAuthenticatedContextCacheHolder(authenticatedContextCacheHolder);
+        securityContextRepository.setSecurityContextHolder(securityContextHolder);
+        return securityContextRepository;
     }
 
     /**

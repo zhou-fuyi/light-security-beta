@@ -36,7 +36,10 @@ public class SecurityContextConfigurer<B extends FilterChainBuilder<B>> extends 
     public void configure(B builder) throws Exception {
         SecurityContextRepository securityContextRepository = builder.getSharedObject(SecurityContextRepository.class);
         if (securityContextRepository == null){
+            logger.warn("将使用一个缺少AuthenticatedContextCacheHolder的SecurityContextRepository, 可能会引发NPE, 后续会进行改造");
+            // TODO: 2019/12/14 修改默认的InternalSecurityContextRepository
             securityContextRepository = new InternalSecurityContextRepository();
+            ((InternalSecurityContextRepository) securityContextRepository).setSecurityContextHolder(securityContextHolder);
         }
         SecurityContextPretreatmentFilter securityContextPretreatmentFilter = new SecurityContextPretreatmentFilter(securityContextRepository, securityContextHolder);
         securityContextPretreatmentFilter = postProcess(securityContextPretreatmentFilter);
