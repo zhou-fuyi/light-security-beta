@@ -7,6 +7,7 @@ import com.light.security.core.access.meta.DefaultFilterInvocationSecurityMetada
 import com.light.security.core.access.model.ActionAuthority;
 import com.light.security.core.access.model.Authority;
 import com.light.security.core.authentication.dao.jdbc.JdbcDaoProcessor;
+import com.light.security.core.authentication.dao.jdbc.JdbcDaoProcessorManager;
 import com.light.security.core.authentication.dao.jdbc.JdbcQuery;
 import com.light.security.core.cache.holder.SecurityMetadataSourceContextCacheHolder;
 import com.light.security.core.config.core.ObjectPostProcessor;
@@ -20,6 +21,7 @@ import com.light.security.core.util.matcher.AntPathRequestMatcher;
 import com.light.security.core.util.matcher.OrRequestMatcher;
 import com.light.security.core.util.matcher.RequestMatcher;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -48,6 +50,14 @@ public class SecurityMetadataSourceCacheListener extends AbstractCacheContextLis
 
     private final double AUTHORITY_OPENED_THRESHOLD = 0.5d;
 
+    /**
+     * 这里注入主要是如果存在启动创建表的情况, 那么必须要在{@link SecurityMetadataSourceCacheListener}之前执行
+     *
+     * 在这里进行注入, 那么就会在进行{@link SecurityMetadataSourceCacheListener}属性装配的时候初始化相关类
+     */
+    @Autowired
+    private JdbcDaoProcessorManager jdbcDaoProcessorManager;
+
     @Autowired
     private SecurityMetadataSourceContextCacheHolder securityMetadataSourceContextCacheHolder;
 
@@ -59,6 +69,7 @@ public class SecurityMetadataSourceCacheListener extends AbstractCacheContextLis
 
     /**
      * 依赖查找时加载, 避免使用时未初始化导致SQL为空异常
+     * 引入原因同{@link JdbcDaoProcessorManager}
      */
     @Autowired
     private JdbcQuery jdbcQuery;
@@ -78,6 +89,12 @@ public class SecurityMetadataSourceCacheListener extends AbstractCacheContextLis
             if (processor.support(currentSecurityMode)){
                 try {
                     securityMetadata = processor.loadSecurityMetadataOnStartup();
+                    if (securityMetadata != null && securityMetadata.size() == 0){
+                        if (logger.isWarnEnabled()){
+                            logger.warn("当前数据库中权限数据为空, 请尽快填写权限（action权限）数据, 避免后续授权过程引发异常");
+                        }
+                        return;
+                    }
                 } catch (Exception e) {
                     lastException = e;
                 }
@@ -179,5 +196,13 @@ public class SecurityMetadataSourceCacheListener extends AbstractCacheContextLis
             };
             beanFactory.registerSingleton(ignoredOpenedAuthoritiesSecurityConfigurerAdapter.getClass().getName(), ignoredOpenedAuthoritiesSecurityConfigurerAdapter);
         }
+    }
+
+    @Override
+    protected void initPreCheck() {
+        Assert.notNull(jdbcDaoProcessorManager, "JdbcDaoProcessorManager 不能为null, 请将其注册为一个SpringBean");
+        Assert.isTrue(!CollectionUtils.isEmpty(jdbcDaoProcessors)
+                , "List<JdbcDaoProcessor> jdbcDaoProcessors 不能为空, 请将相关类注册为SpringBean, 具体可以参见 --> com.light.security.core.config.configuration.JdbcDaoProcessorBeanConfiguration");
+        Assert.notNull(jdbcQuery, "JdbcQuery 不能为null, 请将其注册为一个SpringBean");
     }
 }

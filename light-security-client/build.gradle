@@ -3,4 +3,6 @@ dependencies {
     compile project(':light-security-browser')
     compile project(':light-security-app')
     compile "${rootProject.ext.dependencies.mysql}"
+
+    compile('org.springframework.boot:spring-boot-starter-actuator')
 }

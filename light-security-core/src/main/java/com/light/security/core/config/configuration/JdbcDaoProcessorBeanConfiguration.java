@@ -1,13 +1,10 @@
 package com.light.security.core.config.configuration;
 
-import com.light.security.core.access.model.ActionAuthority;
 import com.light.security.core.authentication.dao.jdbc.*;
 import com.light.security.core.authentication.dao.jdbc.auth.ActionAuthorityDaoProcessor;
 import com.light.security.core.authentication.dao.jdbc.auth.ElementAuthorityDaoProcessor;
 import com.light.security.core.authentication.dao.jdbc.auth.MenuAuthorityDaoProcessor;
-import com.light.security.core.properties.SecurityProperties;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;

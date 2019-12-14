@@ -2,6 +2,7 @@ package com.light.security.core.cache.listener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.ServletContextEvent;
@@ -13,7 +14,7 @@ import javax.servlet.ServletContextListener;
  * @Author ZhouJian
  * @Date 2019-11-28
  */
-public abstract class AbstractCacheContextListener implements ServletContextListener {
+public abstract class AbstractCacheContextListener implements ServletContextListener, InitializingBean {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -47,4 +48,11 @@ public abstract class AbstractCacheContextListener implements ServletContextList
     protected void loadCache(ServletContextEvent servletContextEvent) throws Exception {
         logger.warn("请实现自己的权限元数据的加载逻辑");
     }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        initPreCheck();
+    }
+
+    protected abstract void initPreCheck();
 }
