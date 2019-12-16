@@ -22,7 +22,7 @@ public class DefaultPreAuthenticationChecker extends AbstractSubjectDetailChecke
         if (!detail.isEnabled()) {
             logger.debug("账户已被禁用");
 
-            throw new DisabledException(104, "账户已被禁用");
+            throw new DisabledException(401, "账户已被禁用");
         }
 
         if (!detail.isAccountNonExpired()) {

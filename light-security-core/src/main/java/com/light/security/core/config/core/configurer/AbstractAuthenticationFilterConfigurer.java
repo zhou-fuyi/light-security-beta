@@ -11,6 +11,7 @@ import com.light.security.core.authentication.handler.SimpleAppAuthenticationFai
 import com.light.security.core.authentication.handler.SimpleAppAuthenticationSuccessHandler;
 import com.light.security.core.config.core.builder.FilterChainBuilder;
 import com.light.security.core.filter.AbstractAuthenticationFilter;
+import com.light.security.core.filter.SubjectNamePasswordAuthenticationFilter;
 import com.light.security.core.util.matcher.RequestMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * @ClassName AbstractAuthenticationFilterConfigurer
- * @Description 表单认证配置器抽象类, 用于配置表单认证过滤器 --> {@link com.light.security.core.filter.UsernamePasswordAuthenticationFilter}
+ * @Description 表单认证配置器抽象类, 用于配置表单认证过滤器 --> {@link SubjectNamePasswordAuthenticationFilter}
  *
  * 注意, 这只是一个抽象类
  * @Author ZhouJian
@@ -40,7 +41,7 @@ public abstract class AbstractAuthenticationFilterConfigurer<B extends FilterCha
     protected static final String DEFAULT_HTTP_METHOD = "POST";
 
     /**
-     * 用于认证的过滤器, 这里的实例对象是{@link com.light.security.core.filter.UsernamePasswordAuthenticationFilter}
+     * 用于认证的过滤器, 这里的实例对象是{@link SubjectNamePasswordAuthenticationFilter}
      */
     private F authFilter;
 

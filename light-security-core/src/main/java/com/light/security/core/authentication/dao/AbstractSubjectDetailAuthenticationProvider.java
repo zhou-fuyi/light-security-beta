@@ -6,7 +6,7 @@ import com.light.security.core.authentication.subject.DefaultPreAuthenticationCh
 import com.light.security.core.authentication.subject.SubjectDetail;
 import com.light.security.core.authentication.subject.SubjectDetailChecker;
 import com.light.security.core.authentication.token.Authentication;
-import com.light.security.core.authentication.token.UsernamePasswordAuthenticationToken;
+import com.light.security.core.authentication.token.SubjectNamePasswordAuthenticationToken;
 import com.light.security.core.cache.holder.AuthenticatedContextCacheHolder;
 import com.light.security.core.exception.AuthenticationException;
 import com.light.security.core.exception.SubjectNameNotFoundException;
@@ -36,22 +36,22 @@ public abstract class AbstractSubjectDetailAuthenticationProvider implements Aut
      * @param authenticationToken
      * @throws AuthenticationException
      */
-    protected abstract void additionalAuthenticationChecks(SubjectDetail detail, UsernamePasswordAuthenticationToken authenticationToken) throws AuthenticationException;
+    protected abstract void additionalAuthenticationChecks(SubjectDetail detail, SubjectNamePasswordAuthenticationToken authenticationToken) throws AuthenticationException;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        Assert.isInstanceOf(UsernamePasswordAuthenticationToken.class, "该程序只支持 UsernamePasswordAuthenticationToken 类型");
-        String username = (authentication.getSubject() == null) ? "NONE_PROVIDER" : authentication.getName();
+        Assert.isInstanceOf(SubjectNamePasswordAuthenticationToken.class, authentication, "该程序只支持 UsernamePasswordAuthenticationToken 类型");
+        String subjectName = (authentication.getSubject() == null) ? "NONE_PROVIDER" : authentication.getName();
         boolean cacheWasUsed = true;
-        SubjectDetail subject =  getSubjectFormCache(username);
+        SubjectDetail subject =  getSubjectFormCache(subjectName);
 
         if (subject == null){
             cacheWasUsed = false;
 
             try {
-                subject = retrieveSubject(username, (UsernamePasswordAuthenticationToken) authentication);
+                subject = retrieveSubject(subjectName, (SubjectNamePasswordAuthenticationToken) authentication);
             }catch (SubjectNameNotFoundException e){
-                logger.debug("User '" + username + "' not found");
+                logger.debug("Subject '" + subjectName + "' not found");
                 throw e;
             }
         }
@@ -59,13 +59,13 @@ public abstract class AbstractSubjectDetailAuthenticationProvider implements Aut
 
         try {
             preAuthenticationChecker.check(subject);
-            additionalAuthenticationChecks(subject, (UsernamePasswordAuthenticationToken) authentication);
+            additionalAuthenticationChecks(subject, (SubjectNamePasswordAuthenticationToken) authentication);
         }catch (AuthenticationException ex){
             if (cacheWasUsed){
                 cacheWasUsed = false;
-                subject = retrieveSubject(username, (UsernamePasswordAuthenticationToken) authentication);
+                subject = retrieveSubject(subjectName, (SubjectNamePasswordAuthenticationToken) authentication);
                 preAuthenticationChecker.check(subject);
-                additionalAuthenticationChecks(subject, (UsernamePasswordAuthenticationToken) authentication);
+                additionalAuthenticationChecks(subject, (SubjectNamePasswordAuthenticationToken) authentication);
             }else {
                 throw ex;
             }
@@ -86,7 +86,7 @@ public abstract class AbstractSubjectDetailAuthenticationProvider implements Aut
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return (UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
+        return (SubjectNamePasswordAuthenticationToken.class.isAssignableFrom(authentication));
     }
 
     @Override
@@ -98,7 +98,7 @@ public abstract class AbstractSubjectDetailAuthenticationProvider implements Aut
     protected abstract void doAfterPropertiesSet();
 
     protected Authentication createSuccessAuthentication(Object subject, Authentication authentication, SubjectDetail subjectDetail){
-        UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(subject, authentication.getCredentials(), subjectDetail.getRoles());
+        SubjectNamePasswordAuthenticationToken result = new SubjectNamePasswordAuthenticationToken(subject, authentication.getCredentials(), subjectDetail.getRoles());
         result.setDetails(authentication.getDetails());
         return result;
     }
@@ -110,7 +110,7 @@ public abstract class AbstractSubjectDetailAuthenticationProvider implements Aut
      * @return
      * @throws AuthenticationException
      */
-    protected abstract SubjectDetail retrieveSubject(String subjectName, UsernamePasswordAuthenticationToken authenticationToken) throws AuthenticationException;
+    protected abstract SubjectDetail retrieveSubject(String subjectName, SubjectNamePasswordAuthenticationToken authenticationToken) throws AuthenticationException;
 
     public AuthenticatedContextCacheHolder getAuthenticatedContextCacheHolder() {
         return authenticatedContextCacheHolder;

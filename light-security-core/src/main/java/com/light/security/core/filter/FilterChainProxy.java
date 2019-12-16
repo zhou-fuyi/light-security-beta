@@ -35,7 +35,7 @@ import java.util.List;
  * {@link org.springframework.web.filter.DelegatingFilterProxy}虽然是一个代理类, 但是也是一个名副其实的Servlet Filter Bean, 它是需要注册到ServletContainer中的,
  * 其生命周期受Servlet容器管理. 而像Light Security中使用的Filter Bean(实现了{@link javax.servlet.Filter}接口的Spring Bean)
  * (    例如:
- *          {@link UsernamePasswordAuthenticationFilter}
+ *          {@link SubjectNamePasswordAuthenticationFilter}
  *          {@link FilterChainProxy}
  * )是没有注册到ServletContainer中的, 这里所提到的Filter Bean默认情况下是有Spring进行生命周期的管理, 由{@link org.springframework.web.filter.DelegatingFilterProxy}
  * 代理接入标准Servlet Filter, 在该代理类的doFilter方法中委派给 "自定义的Filter Bean" 进行后续动作. 这些 "自定义的Filter Bean" 是在Spring环境下, 是可以使用Spring

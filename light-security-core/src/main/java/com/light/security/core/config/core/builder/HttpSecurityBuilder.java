@@ -13,6 +13,7 @@ import com.light.security.core.config.core.configurer.CorsConfigurer;
 import com.light.security.core.config.core.configurer.ExceptionTranslationConfigurer;
 import com.light.security.core.config.core.configurer.FormLoginConfigurer;
 import com.light.security.core.config.core.configurer.SecurityContextConfigurer;
+import com.light.security.core.filter.SubjectNamePasswordAuthenticationFilter;
 import com.light.security.core.filter.chain.DefaultSecurityFilterChain;
 import com.light.security.core.util.matcher.*;
 import org.springframework.context.ApplicationContext;
@@ -92,7 +93,7 @@ public class HttpSecurityBuilder extends AbstractConfiguredSecurityBuilder<Defau
     }
 
     /**
-     * 配置{@link com.light.security.core.filter.UsernamePasswordAuthenticationFilter}过滤器
+     * 配置{@link SubjectNamePasswordAuthenticationFilter}过滤器
      * @param securityContextHolder
      * @return
      * @throws Exception

@@ -1,7 +1,7 @@
 package com.light.security.core.filter;
 
 import com.light.security.core.authentication.token.Authentication;
-import com.light.security.core.authentication.token.UsernamePasswordAuthenticationToken;
+import com.light.security.core.authentication.token.SubjectNamePasswordAuthenticationToken;
 import com.light.security.core.exception.AuthenticationException;
 import com.light.security.core.exception.AuthenticationServiceException;
 import com.light.security.core.util.matcher.AntPathRequestMatcher;
@@ -15,18 +15,18 @@ import javax.servlet.http.HttpServletResponse;
  * @Author ZhouJian
  * @Date 2019-11-25
  */
-public class UsernamePasswordAuthenticationFilter extends AbstractAuthenticationFilter {
+public class SubjectNamePasswordAuthenticationFilter extends AbstractAuthenticationFilter {
 
     private static final String PROCESS_URL = "/login";
     private static final String DEFAULT_HTTP_METHOD = "POST";
-    public static final String LIGHT_SECURITY_FORM_USERNAME_KEY = "username";
+    public static final String LIGHT_SECURITY_FORM_SUBJECT_NAME_KEY = "username";
     public static final String LIGHT_SECURITY_FORM_PASSWORD_KEY = "password";
 
-    private String usernameParameter = LIGHT_SECURITY_FORM_USERNAME_KEY;
+    private String subjectNameParameter = LIGHT_SECURITY_FORM_SUBJECT_NAME_KEY;
     private String passwordParameter = LIGHT_SECURITY_FORM_PASSWORD_KEY;
     private boolean postOnly = true;
     
-    public UsernamePasswordAuthenticationFilter(){
+    public SubjectNamePasswordAuthenticationFilter(){
         super(new AntPathRequestMatcher(PROCESS_URL, DEFAULT_HTTP_METHOD));
     }
 
@@ -35,40 +35,40 @@ public class UsernamePasswordAuthenticationFilter extends AbstractAuthentication
         if (postOnly && !request.getMethod().equals("POST")){
             throw new AuthenticationServiceException(400, "不支持当前身份认证方法: " + request.getMethod());
         }
-        String username = obtainUsername(request);
+        String subjectName = obtainSubjectName(request);
         String password = obtainPassword(request);
-        if (username == null){
-            username = "";
+        if (subjectName == null){
+            subjectName = "";
         }
         if (password == null){
             password = "";
         }
-        username = username.trim();//密码存在前后空格也为有效字符的情况, 但是用户名一般不存在
-        UsernamePasswordAuthenticationToken requestToken = new UsernamePasswordAuthenticationToken(username, password);
+        subjectName = subjectName.trim();//密码存在前后空格也为有效字符的情况, 但是用户名一般不存在
+        SubjectNamePasswordAuthenticationToken requestToken = new SubjectNamePasswordAuthenticationToken(subjectName, password);
 
         //对于Details的构建, 可以通过父类的<code>setAuthenticationDetailsSource()</code>方法重新指定Details数据构建源, 也可以通过重写setDetails()方法实现
         setDetail(request, requestToken);
         return getAuthenticationManager().authenticate(requestToken);
     }
 
-    protected String obtainUsername(HttpServletRequest request) {
-        return request.getParameter(usernameParameter);
+    protected String obtainSubjectName(HttpServletRequest request) {
+        return request.getParameter(subjectNameParameter);
     }
 
     protected String obtainPassword(HttpServletRequest request){
         return request.getParameter(passwordParameter);
     }
 
-    protected void setDetail(HttpServletRequest request, UsernamePasswordAuthenticationToken authRequest){
+    protected void setDetail(HttpServletRequest request, SubjectNamePasswordAuthenticationToken authRequest){
         authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
     }
 
-    public String getUsernameParameter() {
-        return usernameParameter;
+    public String getSubjectNameParameter() {
+        return subjectNameParameter;
     }
 
-    public void setUsernameParameter(String usernameParameter) {
-        this.usernameParameter = usernameParameter;
+    public void setSubjectNameParameter(String subjectNameParameter) {
+        this.subjectNameParameter = subjectNameParameter;
     }
 
     public String getPasswordParameter() {

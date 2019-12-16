@@ -13,8 +13,11 @@ import com.light.security.core.authentication.context.holder.SecurityContextHold
 import com.light.security.core.authentication.context.repository.InternalSecurityContextRepository;
 import com.light.security.core.authentication.context.repository.SecurityContextRepository;
 import com.light.security.core.cache.holder.AuthenticatedContextCacheHolder;
+import com.light.security.core.config.core.builder.ChainProxyBuilder;
 import com.light.security.core.config.core.configurer.GlobalAuthenticationConfigurerAdapter;
+import com.light.security.core.config.core.configurer.IgnoredResourcesConfigurerAdapter;
 import com.light.security.core.properties.SecurityProperties;
+import com.light.security.core.util.matcher.RequestMatcher;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -116,5 +119,14 @@ public class LightSecurityAutoConfiguration {
     @ConditionalOnMissingBean(ApplicationEventPublisher.class)
     public DefaultAuthenticationEventPublisher authenticationEventPublisher(ApplicationEventPublisher applicationEventPublisher){
         return new DefaultAuthenticationEventPublisher(applicationEventPublisher);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IgnoredResourcesConfigurerAdapter.class)
+    public IgnoredResourcesConfigurerAdapter ignoredResourcesConfigurerAdapter(){
+        IgnoredResourcesConfigurerAdapter ignoredResourcesConfigurerAdapter = new IgnoredResourcesConfigurerAdapter() {
+
+        };
+        return ignoredResourcesConfigurerAdapter;
     }
 }

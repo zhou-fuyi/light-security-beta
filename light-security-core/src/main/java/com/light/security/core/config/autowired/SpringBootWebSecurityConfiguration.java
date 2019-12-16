@@ -35,41 +35,41 @@ import java.util.List;
 @EnabledLightSecurity
 public class SpringBootWebSecurityConfiguration {
 
-    private static final List<String> DEFAULT_IGNORED = Arrays.asList("/css/**", "/js/**", "/images/**", "/webjars/**", "/**/favicon.ico");
-
-    /**
-     * 用于注册需要忽略的访问路径
-     * @param securityProperties
-     * @return
-     */
-    @Bean
-    @Order(Ordered.HIGHEST_PRECEDENCE)
-    @ConditionalOnMissingBean(value = WebSecurityConfigurer.class, name = "ignoredPathsWebSecurityConfigurerAdapter")
-    public WebSecurityConfigurer<ChainProxyBuilder> ignoredPathsWebSecurityConfigurerAdapter(SecurityProperties securityProperties){
-        return new WebSecurityConfigurer<ChainProxyBuilder>() {
-            @Override
-            public void init(ChainProxyBuilder builder) throws Exception {
-
-            }
-
-            @Override
-            public void configure(ChainProxyBuilder builder) throws Exception {
-                List<String> ignoredPaths = new ArrayList<>(DEFAULT_IGNORED);
-                if (!CollectionUtils.isEmpty(securityProperties.getIgnored())){
-                    ignoredPaths.addAll(securityProperties.getIgnored());
-                }
-                List<RequestMatcher> ignoredMatchers = new ArrayList<>(ignoredPaths.size());
-                for (String ignoredPath : ignoredPaths){
-                    ignoredMatchers.add(new AntPathRequestMatcher(ignoredPath));
-                }
-                /**
-                 * 这样就将需要忽略的路径匹配器归为一个, 有效的减少了过滤器链的数量
-                 */
-                if (!ignoredMatchers.isEmpty()){
-                    builder.ignoredRequestRegistry().requestMatchers(new OrRequestMatcher(ignoredMatchers));
-                }
-            }
-        };
-    }
+//    private static final List<String> DEFAULT_IGNORED = Arrays.asList("/css/**", "/js/**", "/images/**", "/webjars/**", "/**/favicon.ico");
+//
+//    /**
+//     * 用于注册需要忽略的访问路径
+//     * @param securityProperties
+//     * @return
+//     */
+//    @Bean
+//    @Order(Ordered.HIGHEST_PRECEDENCE)
+//    @ConditionalOnMissingBean(value = WebSecurityConfigurer.class, name = "ignoredPathsWebSecurityConfigurerAdapter")
+//    public WebSecurityConfigurer<ChainProxyBuilder> ignoredPathsWebSecurityConfigurerAdapter(SecurityProperties securityProperties){
+//        return new WebSecurityConfigurer<ChainProxyBuilder>() {
+//            @Override
+//            public void init(ChainProxyBuilder builder) throws Exception {
+//
+//            }
+//
+//            @Override
+//            public void configure(ChainProxyBuilder builder) throws Exception {
+//                List<String> ignoredPaths = new ArrayList<>(DEFAULT_IGNORED);
+//                if (!CollectionUtils.isEmpty(securityProperties.getIgnored())){
+//                    ignoredPaths.addAll(securityProperties.getIgnored());
+//                }
+//                List<RequestMatcher> ignoredMatchers = new ArrayList<>(ignoredPaths.size());
+//                for (String ignoredPath : ignoredPaths){
+//                    ignoredMatchers.add(new AntPathRequestMatcher(ignoredPath));
+//                }
+//                /**
+//                 * 这样就将需要忽略的路径匹配器归为一个, 有效的减少了过滤器链的数量
+//                 */
+//                if (!ignoredMatchers.isEmpty()){
+//                    builder.ignoredRequestRegistry().requestMatchers(new OrRequestMatcher(ignoredMatchers));
+//                }
+//            }
+//        };
+//    }
 
 }

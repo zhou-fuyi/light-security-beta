@@ -3,7 +3,7 @@ package com.light.security.core.config.core.builder;
 import com.light.security.core.filter.ExceptionTranslationFilter;
 import com.light.security.core.filter.FilterSecurityInterceptor;
 import com.light.security.core.filter.SecurityContextPretreatmentFilter;
-import com.light.security.core.filter.UsernamePasswordAuthenticationFilter;
+import com.light.security.core.filter.SubjectNamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 
 import javax.servlet.Filter;
@@ -29,7 +29,7 @@ final class FilterComparator implements Comparator<Filter>, Serializable {
         order += STEP;
         put(SecurityContextPretreatmentFilter.class, order);
         order += STEP;
-        put(UsernamePasswordAuthenticationFilter.class, order);
+        put(SubjectNamePasswordAuthenticationFilter.class, order);
         order += STEP;
         put(ExceptionTranslationFilter.class, order);
         order += STEP;

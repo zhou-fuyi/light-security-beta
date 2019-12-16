@@ -102,11 +102,12 @@ public class InternalSecurityContextRepository implements SecurityContextReposit
 
     @Override
     public void saveContext(SecurityContext context, HttpServletRequest request, HttpServletResponse response) {
-        final Authentication authentication = context.getAuthentication();
+        final Authentication authentication = context == null ? null : context.getAuthentication();
         if (null == authentication){
             if (logger.isDebugEnabled()){
                 logger.debug("SecurityContext是一个空的实现, 不会使用 SupportExpiredAuthenticatedContextCache 进行存储");
             }
+            return;
         }
         String key = request.getHeader(tokenKey);
         if (StringUtils.isEmpty(key)){

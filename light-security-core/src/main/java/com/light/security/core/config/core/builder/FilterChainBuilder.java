@@ -4,6 +4,7 @@ import com.light.security.core.access.AuthenticationProvider;
 import com.light.security.core.authentication.SubjectDetailService;
 import com.light.security.core.config.core.SecurityBuilder;
 import com.light.security.core.config.core.SecurityConfigurer;
+import com.light.security.core.filter.SubjectNamePasswordAuthenticationFilter;
 import com.light.security.core.filter.chain.DefaultSecurityFilterChain;
 
 import javax.servlet.Filter;
@@ -95,7 +96,7 @@ public interface FilterChainBuilder<B extends FilterChainBuilder<B>> extends Sec
      * 提供的过滤器的顺序为：
      * <ul>
      * <li>{@link com.light.security.core.filter.SecurityContextPretreatmentFilter}</li>
-     * <li>{@link com.light.security.core.filter.UsernamePasswordAuthenticationFilter}</li>
+     * <li>{@link SubjectNamePasswordAuthenticationFilter}</li>
      * <li>{@link com.light.security.core.filter.ExceptionTranslationFilter}</li>
      * <li>{@link com.light.security.core.filter.FilterSecurityInterceptor}</li>
      * </ul>

@@ -96,7 +96,7 @@ public abstract class AbstractJdbcProcessor extends JdbcDaoSupport implements Jd
         List<SubjectDetail> subjects = loadSubjectsBySubjectName(subjectName);
         if (CollectionUtils.isEmpty(subjects)){
             logger.debug("账户名 {} 不存在", subjectName);
-            throw new SubjectNameNotFoundException(404, "SubjectName is " + subjectName + "找不到");
+            throw new SubjectNameNotFoundException(404, "SubjectName为空或不存在, 请检查并重新输入");
         }
         SubjectDetail subject = subjects.get(0);
         Collection<GrantedRole> roles = new ArrayList<>();

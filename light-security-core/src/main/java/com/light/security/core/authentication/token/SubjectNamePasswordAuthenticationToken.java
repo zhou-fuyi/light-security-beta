@@ -10,19 +10,19 @@ import java.util.Collection;
  * @Author ZhouJian
  * @Date 2019-11-19
  */
-public class UsernamePasswordAuthenticationToken extends AbstractAuthenticationToken {
+public class SubjectNamePasswordAuthenticationToken extends AbstractAuthenticationToken {
 
     private final Object subject;
     private Object credentials;
 
-    public UsernamePasswordAuthenticationToken(Object subject, Object credentials){
+    public SubjectNamePasswordAuthenticationToken(Object subject, Object credentials){
         super(null);
         this.subject = subject;
         this.credentials = credentials;
         setAuthenticated(false);
     }
 
-    public UsernamePasswordAuthenticationToken(Object subject, Object credentials, Collection<? extends GrantedRole> roles) {
+    public SubjectNamePasswordAuthenticationToken(Object subject, Object credentials, Collection<? extends GrantedRole> roles) {
         super(roles);
         this.subject = subject;
         this.credentials = credentials;

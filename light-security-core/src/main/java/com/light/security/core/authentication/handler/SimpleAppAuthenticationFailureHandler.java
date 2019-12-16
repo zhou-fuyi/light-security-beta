@@ -20,6 +20,6 @@ public class SimpleAppAuthenticationFailureHandler extends AbstractAuthenticatio
         if (logger.isDebugEnabled()){
             logger.debug("执行认证失败处理器");
         }
-        ServletUtils.writeException(request, response, exception);
+        ServletUtils.writeAuthenticationException(request, response, exception);
     }
 }

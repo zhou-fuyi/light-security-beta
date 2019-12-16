@@ -2,7 +2,7 @@ package com.light.security.core.authentication.dao;
 
 import com.light.security.core.authentication.SubjectDetailService;
 import com.light.security.core.authentication.subject.SubjectDetail;
-import com.light.security.core.authentication.token.UsernamePasswordAuthenticationToken;
+import com.light.security.core.authentication.token.SubjectNamePasswordAuthenticationToken;
 import com.light.security.core.exception.AuthenticationException;
 import com.light.security.core.exception.BadCredentialsException;
 import com.light.security.core.exception.InternalAuthenticationServiceException;
@@ -10,6 +10,7 @@ import com.light.security.core.exception.SubjectNameNotFoundException;
 import com.light.security.core.util.crypto.bcrypt.BCryptPasswordEncoder;
 import com.light.security.core.util.crypto.password.PasswordEncoder;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * @ClassName DaoAuthenticationProvider
@@ -32,13 +33,13 @@ public class DaoAuthenticationProvider extends AbstractSubjectDetailAuthenticati
     }
 
     @Override
-    protected void additionalAuthenticationChecks(SubjectDetail detail, UsernamePasswordAuthenticationToken authenticationToken) throws AuthenticationException {
-        if (authenticationToken.getCredentials() == null){
+    protected void additionalAuthenticationChecks(SubjectDetail detail, SubjectNamePasswordAuthenticationToken authenticationToken) throws AuthenticationException {
+        if (StringUtils.isEmpty(authenticationToken.getCredentials())){
             logger.debug("身份验证失败: 未提供凭据");
             throw new BadCredentialsException(400, "未提供凭证");
         }
         String presentedPassword = authenticationToken.getCredentials().toString();//账户请求认证时携带的凭证
-        if (this.passwordEncoder.matches(presentedPassword, detail.getPassword())){
+        if (!this.passwordEncoder.matches(presentedPassword, detail.getPassword())){
             logger.debug("身份验证失败");
             throw new BadCredentialsException(401, "输入凭证错误");
         }
@@ -51,7 +52,7 @@ public class DaoAuthenticationProvider extends AbstractSubjectDetailAuthenticati
     }
 
     @Override
-    protected SubjectDetail retrieveSubject(String subjectName, UsernamePasswordAuthenticationToken authenticationToken) throws AuthenticationException {
+    protected SubjectDetail retrieveSubject(String subjectName, SubjectNamePasswordAuthenticationToken authenticationToken) throws AuthenticationException {
         SubjectDetail loadSubject = null;
         try {
             loadSubject = this.subjectDetailService.loadSubjectBySubjectName(subjectName);

@@ -106,6 +106,10 @@ public class SecurityMetadataSourceCacheListener extends AbstractCacheContextLis
         throw lastException;
     }
 
+    /**
+     * 将可用的并且非公共权限转换为特定格式, 并加入到权限数据源中
+     * @param authorities
+     */
     private void transformToSecurityMetadataSources(Collection<Authority> authorities){
         authorities = preHandler(authorities);
         if (!CollectionUtils.isEmpty(authorities)){
@@ -121,6 +125,12 @@ public class SecurityMetadataSourceCacheListener extends AbstractCacheContextLis
         });
     }
 
+    /**
+     * 预处理, 主要是进行 enabled 和 opened的处理, 这里会将enabled标识为不可用(enabled = 0)的直接删除,
+     * 将opened标识为开放(opened = 1)的另行处理(注册为开放资源).
+     * @param authorities
+     * @return
+     */
     private Collection<Authority> preHandler(Collection<Authority> authorities){
         if (authorities.size() == 0){
             if (logger.isWarnEnabled()){
@@ -138,13 +148,17 @@ public class SecurityMetadataSourceCacheListener extends AbstractCacheContextLis
                 iterator.remove();
             }
             /**
-             * 如果权限不可用, 那就去除
+             * 如果权限不可用(enabled = 0), 那就去除
              */
             if (!authority.isEnabled()){
                 iterator.remove();
             }
         }
+        /**
+         * 将opened标识为公共的(opened = 1)权限注册为公共资源
+         */
         ignoredOpenedAuthoritiesSecurityConfigurerAdapter(openedAuthorities);
+
         if (CollectionUtils.isEmpty(authorities)){
             throw new IllegalArgumentException("当前已无可用权限数据, 请检查数据库中权限表数据列 enabled 与 opened 是否设置合适");
         }
@@ -152,15 +166,26 @@ public class SecurityMetadataSourceCacheListener extends AbstractCacheContextLis
         return authorities;
     }
 
+    /**
+     * 前置检查, 在{@link #preHandler(Collection)}最后进行调用, 主要是对进行了预处理的数据进行一些前置检查
+     * 其实应该声明几个生命周期函数, 这样方便子类进行切入, 不过目前没有进行实现, 放在后面改善吧
+     * @param authoritiesSize
+     * @param openedAuthoritiesSize
+     */
     private void preCheck(int authoritiesSize, int openedAuthoritiesSize){
         if (openedAuthoritiesSize/ (authoritiesSize * 1.0) >= AUTHORITY_OPENED_THRESHOLD){
             if (logger.isWarnEnabled()){
-                logger.warn("当前获取权限数据共有{}则, 开放权限共有{}, 开放权限占比为{}则, 请注意是否开放权限设置过多"
+                logger.warn("当前获取权限数据共有{}则, 开放权限共有{}则, 开放权限占比为{}, 请注意是否开放权限设置过多"
                         , authoritiesSize, openedAuthoritiesSize, (openedAuthoritiesSize/ (authoritiesSize * 1.0)));
             }
         }
     }
 
+    /**
+     * 是对传入权限进行包装, 返回一个{@link RequestMatcher}对象
+     * @param authority
+     * @return
+     */
     private RequestMatcher getRequestMatcher(Authority authority){
         ActionAuthority actionAuthority = (ActionAuthority) authority;
         RequestMatcher requestMatcher = new AntPathRequestMatcher(actionAuthority.getPattern());
@@ -169,6 +194,8 @@ public class SecurityMetadataSourceCacheListener extends AbstractCacheContextLis
 
     /**
      * 将开放权限注册到{@link ChainProxyBuilder #ignoredRequests}中
+     * {@link com.light.security.core.config.configuration.WebSecurityConfiguration#setChainProxyBuilderConfigurers(ObjectPostProcessor, List)}
+     * 方法中会在IOC容器中收集{@link WebSecurityConfigurer}接口的实例, 并在合适的实际先后调用其init和configure方法(用于辅助目标对象的构建)
      * @param openedAuthorities
      */
     private void ignoredOpenedAuthoritiesSecurityConfigurerAdapter(Collection<Authority> openedAuthorities){
