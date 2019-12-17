@@ -27,6 +27,10 @@ public class CacheHolderBeanConfiguration {
         return new AuthenticatedContextCacheHolder(new SupportExpiredAuthenticatedContextCache());
     }
 
+    /**
+     * 权限元数据的存储
+     * @return
+     */
     @Bean
     @ConditionalOnMissingBean(SecurityMetadataSourceContextCacheHolder.class)
     public SecurityMetadataSourceContextCacheHolder securityMetadataSourceContextCacheHolder(){

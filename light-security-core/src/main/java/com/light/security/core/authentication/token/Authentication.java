@@ -52,4 +52,10 @@ public interface Authentication extends Principal, Serializable {
      */
     Object getCredentials();
 
+    /**
+     * 用于设置认证成功后生成token
+     * @return
+     */
+    Object getAuth();
+
 }

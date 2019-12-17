@@ -23,6 +23,12 @@ public abstract class AbstractAuthenticationToken implements Authentication, Cre
     private Collection<? extends GrantedRole> roles;
     private Object details;
     private boolean authenticated = false;//默认情况下为false, 即为未认证状态
+    /**
+     * 用于存储账户在认证成功后生成的token字符串, 仅仅在认证成功后{@link #authenticated=true}才能设置,
+     * 用于辅助{@link com.light.security.core.authentication.context.repository.InternalSecurityContextRepository}
+     * 中获取 auth_token
+     */
+    private Object auth;
 
     public AbstractAuthenticationToken(Collection<? extends GrantedRole> roles){
         if (roles == null){
@@ -84,6 +90,18 @@ public abstract class AbstractAuthenticationToken implements Authentication, Cre
         eraseSecret(getCredentials());//这个方法应该是一个空执行
         eraseSecret(getSubject());//将会调用SubjectDetail的实现类Subject的eraseCredentials函数
         eraseSecret(details);//todo 暂时还没有分析, 上面的分析也待验证
+    }
+
+    public void setAuth(Object auth) {
+        if (!this.authenticated){
+            throw new IllegalArgumentException("必须是在认证成功的情况下才能设置合法auth_token");
+        }
+        this.auth = auth;
+    }
+
+    @Override
+    public Object getAuth() {
+        return auth;
     }
 
     /**

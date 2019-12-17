@@ -8,16 +8,15 @@ import com.light.security.core.access.model.tree.builder.manager.TreeBuilderMana
 import com.light.security.core.authentication.AuthenticationManager;
 import com.light.security.core.authentication.DefaultAuthenticationEventPublisher;
 import com.light.security.core.authentication.context.InternalSecurityContext;
-import com.light.security.core.authentication.context.SecurityContext;
 import com.light.security.core.authentication.context.holder.SecurityContextHolder;
 import com.light.security.core.authentication.context.repository.InternalSecurityContextRepository;
 import com.light.security.core.authentication.context.repository.SecurityContextRepository;
 import com.light.security.core.cache.holder.AuthenticatedContextCacheHolder;
-import com.light.security.core.config.core.builder.ChainProxyBuilder;
 import com.light.security.core.config.core.configurer.GlobalAuthenticationConfigurerAdapter;
 import com.light.security.core.config.core.configurer.IgnoredResourcesConfigurerAdapter;
 import com.light.security.core.properties.SecurityProperties;
-import com.light.security.core.util.matcher.RequestMatcher;
+import com.light.security.core.util.signature.InternalDefaultSignature;
+import com.light.security.core.util.signature.Signature;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -101,6 +100,13 @@ public class LightSecurityAutoConfiguration {
         return new SecurityContextHolder(new InternalSecurityContext());
     }
 
+    /**
+     * 用于{@link com.light.security.core.filter.SecurityContextPretreatmentFilter}过滤器中
+     * 加载{@link com.light.security.core.authentication.context.SecurityContext}
+     * @param securityContextHolder
+     * @param authenticatedContextCacheHolder
+     * @return
+     */
     @Bean
     @ConditionalOnMissingBean(SecurityContextRepository.class)
     public SecurityContextRepository securityContextRepository(SecurityContextHolder securityContextHolder, AuthenticatedContextCacheHolder authenticatedContextCacheHolder){
@@ -121,6 +127,10 @@ public class LightSecurityAutoConfiguration {
         return new DefaultAuthenticationEventPublisher(applicationEventPublisher);
     }
 
+    /**
+     * 公共资源适配器注册, 必须要进行该适配器的注册, 才能使用{@link com.light.security.core.config.core.IgnoredResourcesConfigurer}接口
+     * @return
+     */
     @Bean
     @ConditionalOnMissingBean(IgnoredResourcesConfigurerAdapter.class)
     public IgnoredResourcesConfigurerAdapter ignoredResourcesConfigurerAdapter(){
@@ -129,4 +139,5 @@ public class LightSecurityAutoConfiguration {
         };
         return ignoredResourcesConfigurerAdapter;
     }
+
 }

@@ -9,7 +9,7 @@ import java.util.Collection;
 
 /**
  * @ClassName Subject
- * @Description TODO
+ * @Description 默认提供的账户主体实体类
  * @Author ZhouJian
  * @Date 2019-12-09
  */

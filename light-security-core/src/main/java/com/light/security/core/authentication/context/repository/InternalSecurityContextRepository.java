@@ -4,6 +4,7 @@ import com.light.security.core.authentication.context.DefaultSecurityContext;
 import com.light.security.core.authentication.context.SecurityContext;
 import com.light.security.core.authentication.context.holder.HttpRequestResponseHolder;
 import com.light.security.core.authentication.context.holder.SecurityContextHolder;
+import com.light.security.core.authentication.subject.Subject;
 import com.light.security.core.authentication.token.Authentication;
 import com.light.security.core.cache.holder.AuthenticatedContextCacheHolder;
 import com.light.security.core.cache.model.InternalExpiredValueWrapper;
@@ -57,7 +58,7 @@ public class InternalSecurityContextRepository implements SecurityContextReposit
         final String auth_header = request.getHeader(tokenKey);
         if (StringUtils.isEmpty(auth_header)){
             if (debug){
-                logger.debug("当前请求的Header中未正确设置token: _auth, auth_header is null or '' ");
+                logger.debug("当前请求的Header中未设置token: _auth, _auth`s value is null or '' ");
             }
             return null;
         }
@@ -111,8 +112,12 @@ public class InternalSecurityContextRepository implements SecurityContextReposit
         }
         String key = request.getHeader(tokenKey);
         if (StringUtils.isEmpty(key)){
+            key = authentication.getAuth() != null ? authentication.getAuth().toString() : null;
+        }
+
+        if (StringUtils.isEmpty(key)){
             if (logger.isWarnEnabled()){
-                logger.warn("_auth key 值无故丢失, 请检查程序安全性");
+                logger.warn("_auth 值无故丢失, 请检查程序安全性");
             }
         }else {
             //这里进行重新放入是可能存在：当前线程过程中进行了必要性、业务性的Authentication的数据修改, 保持数据的一致性

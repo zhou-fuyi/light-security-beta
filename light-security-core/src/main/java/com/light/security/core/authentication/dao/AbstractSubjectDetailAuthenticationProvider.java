@@ -8,8 +8,11 @@ import com.light.security.core.authentication.subject.SubjectDetailChecker;
 import com.light.security.core.authentication.token.Authentication;
 import com.light.security.core.authentication.token.SubjectNamePasswordAuthenticationToken;
 import com.light.security.core.cache.holder.AuthenticatedContextCacheHolder;
+import com.light.security.core.cache.model.InternalExpiredValueWrapper;
 import com.light.security.core.exception.AuthenticationException;
 import com.light.security.core.exception.SubjectNameNotFoundException;
+import com.light.security.core.util.signature.InternalDefaultSignature;
+import com.light.security.core.util.signature.Signature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -27,6 +30,11 @@ public abstract class AbstractSubjectDetailAuthenticationProvider implements Aut
     private AuthenticatedContextCacheHolder authenticatedContextCacheHolder;
     private SubjectDetailChecker preAuthenticationChecker = new DefaultPreAuthenticationChecker();
     private SubjectDetailChecker postAuthenticationChecker = new DefaultPostAuthenticationChecker();
+    /**
+     * 默认签名实现, 不可以, 其实就是包装了一下UUID
+     *
+     */
+    private Signature signature = new InternalDefaultSignature();
 
     /**
      * 由子类实现并定义自己的检查逻辑, 通常这里都会进行密码校验
@@ -73,15 +81,14 @@ public abstract class AbstractSubjectDetailAuthenticationProvider implements Aut
 
         postAuthenticationChecker.check(subject);
 
+        Object toReturn = subject;
+
+        Authentication successAuthentication = createSuccessAuthentication(toReturn, authentication, subject);
         if (!cacheWasUsed){
-            // TODO: 2019-12-02 未完成数据的缓存实现, 未定义缓存中key值选取
-            // 存放检索到的账户数据
-//            this.authenticatedContextCacheHolder.put(username, new InternalExpiredValueWrapper<Authentication>());
-            // 存放检索到的账户数据的权限数据
+            cacheAuthentication(successAuthentication);
         }
 
-        Object toReturn = subject;
-        return createSuccessAuthentication(toReturn, authentication, subject);
+        return successAuthentication;
     }
 
     @Override
@@ -95,11 +102,23 @@ public abstract class AbstractSubjectDetailAuthenticationProvider implements Aut
         doAfterPropertiesSet();
     }
 
+    /**
+     * 缓存账户数据
+     * @param authentication
+     */
+    protected void cacheAuthentication(Authentication authentication){
+        authentication = (SubjectNamePasswordAuthenticationToken) authentication;
+        String key = signature.sign(authentication.getName());
+        ((SubjectNamePasswordAuthenticationToken) authentication).setAuth(key);
+        authenticatedContextCacheHolder.put(key, new InternalExpiredValueWrapper<Authentication>(key, authentication));
+    }
+
     protected abstract void doAfterPropertiesSet();
 
     protected Authentication createSuccessAuthentication(Object subject, Authentication authentication, SubjectDetail subjectDetail){
         SubjectNamePasswordAuthenticationToken result = new SubjectNamePasswordAuthenticationToken(subject, authentication.getCredentials(), subjectDetail.getRoles());
         result.setDetails(authentication.getDetails());
+
         return result;
     }
 

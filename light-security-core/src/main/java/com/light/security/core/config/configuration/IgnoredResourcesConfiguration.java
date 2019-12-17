@@ -27,7 +27,7 @@ import java.util.List;
 @Configuration
 public class IgnoredResourcesConfiguration implements IgnoredResourcesConfigurer, InitializingBean {
 
-    private static final List<String> DEFAULT_IGNORED = Arrays.asList("/css/**", "/js/**", "/images/**", "/webjars/**", "/**/favicon.ico");
+    private static final List<String> DEFAULT_IGNORED = Arrays.asList("/css/**", "/js/**", "/images/**", "/webjars/**", "/**/favicon.ico", "/error");
 
     private List<RequestMatcher> ignoredPathRequestMatchers = null;
 

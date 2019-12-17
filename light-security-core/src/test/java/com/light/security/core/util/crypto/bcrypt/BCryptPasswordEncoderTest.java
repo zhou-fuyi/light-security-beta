@@ -25,6 +25,7 @@ public class BCryptPasswordEncoderTest {
         String encodedPass3 = "$2a$10$lLXXPtZeeRALUerQaw8XHOZGQSRMF5OUNdMiKZm0pZgyiZakXtdb6";
         String encodedPass4 = "$2a$10$lLXXPtZeeRALUerQaw8XHOZGQSRMF5OUNdMiKZm0pZgyiZakXtdb6";
         String encodedPass5 = "$2a$10$lLXXPtZeeRALUerQaw8XHOZGQSRMF5OUNdMiKZm0pZgyiZakXtdb6";
+
         String[] encodes = new String[]{ encodedPass1, encodedPass2, encodedPass3, encodedPass4, encodedPass5 };
         for (int i = 0; i < 5; i++){
             System.out.println(passwordEncoder.matches(password, encodes[i]));
