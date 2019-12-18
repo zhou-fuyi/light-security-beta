@@ -190,6 +190,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
          */
         if (!disableDefaults){
             httpSecurityBuilder.cors().and()
+                    .anonymous(securityContextHolder).and()
                     .authorize().and()
                     .securityContext(securityContextHolder).securityContextRepository(securityContextRepository).and()
                     .formLogin(securityContextHolder).and()
@@ -349,6 +350,7 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
     protected void configure(HttpSecurityBuilder builder) throws Exception {
         logger.debug("使用默认的configure（HttpSecurityBuilder）. 如果是子类，则可能会覆盖子类configure（HttpSecurityBuilder）.");
         builder.cors().and()
+                .anonymous(securityContextHolder).and()
                 .authorize().and()
                 .securityContext(securityContextHolder).securityContextRepository(securityContextRepository).and()
                 .formLogin(securityContextHolder).and()

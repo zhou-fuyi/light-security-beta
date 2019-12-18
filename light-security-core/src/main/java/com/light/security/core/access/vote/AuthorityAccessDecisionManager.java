@@ -44,7 +44,7 @@ public class AuthorityAccessDecisionManager extends AbstractAccessDecisionManage
             }
         }
         if (deny > 0){
-            throw new NoAccessException(403, "拒绝访问");
+            throw new NoAccessException(403, "没有权限, 拒绝访问");
         }
 
         // To get this far, every AccessDecisionVoter abstained

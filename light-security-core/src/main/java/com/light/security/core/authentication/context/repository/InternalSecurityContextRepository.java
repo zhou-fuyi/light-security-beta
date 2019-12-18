@@ -120,8 +120,12 @@ public class InternalSecurityContextRepository implements SecurityContextReposit
                 logger.warn("_auth 值无故丢失, 请检查程序安全性");
             }
         }else {
-            //这里进行重新放入是可能存在：当前线程过程中进行了必要性、业务性的Authentication的数据修改, 保持数据的一致性
-            authenticatedContextCacheHolder.put(key, new InternalExpiredValueWrapper<Authentication>(key, authentication));//注意不要重新更新过期时间
+            /**
+             * 这里进行重新放入是需要存在：当前线程过程中进行了必要性、业务性的Authentication的数据修改, 保持数据的一致性
+             * {@link com.light.security.core.cache.context.concurrent.SupportExpiredAuthenticatedContextCache}中进行了重复插入的控制
+             * 这里需要考虑是否更新过期时间达到续签的效果, 暂时先不更改过期时间
+             */
+            authenticatedContextCacheHolder.put(key, new InternalExpiredValueWrapper<Authentication>(key, authentication));
             if (logger.isDebugEnabled()){
                 logger.debug("SecurityContext: {}, 已经使用 SupportExpiredAuthenticatedContextCache 进行存储", authentication);
             }

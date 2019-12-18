@@ -48,13 +48,23 @@ public class AuthorityVoter implements AccessDecisionVoter<FilterInvocation> {
             return ACCESS_ABSTAIN;
         }
         int result = 0;
+        boolean supported = false;
         for (ConfigAttribute attribute : attributes){
-            for (GrantedAuthority authority : authenticationGrantedAuthorities){
-                if (attribute.getAttribute().equals(authority.getAuthority().getAuthorityPoint())){
-                    result ++;
-                    break;
+            if (this.supports(attribute)){
+                supported = true;
+                for (GrantedAuthority authority : authenticationGrantedAuthorities){
+                    if (attribute.getAttribute().equals(authority.getAuthority().getAuthorityPoint())){
+                        result ++;
+                        break;
+                    }
                 }
             }
+        }
+        /**
+         * 如果当前投票器不支持, 那么表示弃权
+         */
+        if (!supported){
+            return ACCESS_ABSTAIN;
         }
         if (result > 0){
             if (logger.isDebugEnabled()){
@@ -75,7 +85,7 @@ public class AuthorityVoter implements AccessDecisionVoter<FilterInvocation> {
      */
     private List<GrantedAuthority> findAuthenticationGrantedAuthority(Authentication authentication){
 
-        if (authentication.getGrantedRoles() != null){
+        if (!CollectionUtils.isEmpty(authentication.getGrantedRoles())){
             Collection<GrantedRole> grantedRoles = (Collection<GrantedRole>) authentication.getGrantedRoles();
             List<GrantedAuthority> grantedActionAuthorities = new ArrayList<>(grantedRoles.size() * DEFAULT_PER_ROLE_ACTION_AUTHORITY_SIZE);
             Iterator<GrantedRole> grantedRoleIterator = grantedRoles.iterator();

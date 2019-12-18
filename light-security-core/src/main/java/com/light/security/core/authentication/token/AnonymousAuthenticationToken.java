@@ -30,7 +30,6 @@ public class AnonymousAuthenticationToken extends AbstractAuthenticationToken im
         if (subject == null || "".equals(subject)){
             throw new IllegalArgumentException("构造器不接受空值参数 --> subject is null or '' ");
         }
-        Assert.notEmpty(roles, "roles 不能为null或空");
         this.keyHash = keyHash;
         this.subject = subject;
         setAuthenticated(true);

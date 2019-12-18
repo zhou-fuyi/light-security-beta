@@ -1,9 +1,11 @@
 package com.light.security.core.config.core.configurer;
 
 import com.light.security.core.authentication.AuthenticationManager;
+import com.light.security.core.config.core.ObjectPostProcessor;
 import com.light.security.core.config.core.SecurityConfigurer;
 import com.light.security.core.config.core.builder.AuthenticationManagerBuilder;
 import org.springframework.core.annotation.Order;
+import org.springframework.util.Assert;
 
 /**
  * @ClassName GlobalAuthenticationConfigurerAdapter
@@ -23,6 +25,17 @@ import org.springframework.core.annotation.Order;
 @Order(100)
 public abstract class GlobalAuthenticationConfigurerAdapter implements SecurityConfigurer<AuthenticationManager, AuthenticationManagerBuilder> {
 
+    private ObjectPostProcessor<Object> objectPostProcessor;
+
+    protected GlobalAuthenticationConfigurerAdapter(ObjectPostProcessor<Object> objectPostProcessor){
+        Assert.notNull(objectPostProcessor, "构造器不接受空值参数 --> ObjectPostProcessor is null");
+        this.objectPostProcessor = objectPostProcessor;
+    }
+
+    protected ObjectPostProcessor<Object> getObjectPostProcessor() {
+        return objectPostProcessor;
+    }
+
     @Override
     public void init(AuthenticationManagerBuilder builder) throws Exception {
 
@@ -31,5 +44,9 @@ public abstract class GlobalAuthenticationConfigurerAdapter implements SecurityC
     @Override
     public void configure(AuthenticationManagerBuilder builder) throws Exception {
 
+    }
+
+    protected <T> T postProcessor(T t){
+        return this.objectPostProcessor.postProcess(t);
     }
 }

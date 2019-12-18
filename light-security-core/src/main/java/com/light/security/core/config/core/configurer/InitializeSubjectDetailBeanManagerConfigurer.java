@@ -1,8 +1,8 @@
 package com.light.security.core.config.core.configurer;
 
-import com.light.security.core.access.AuthenticationProvider;
 import com.light.security.core.authentication.SubjectDetailService;
 import com.light.security.core.authentication.dao.DaoAuthenticationProvider;
+import com.light.security.core.config.core.ObjectPostProcessor;
 import com.light.security.core.config.core.builder.AuthenticationManagerBuilder;
 import com.light.security.core.util.crypto.password.PasswordEncoder;
 import org.springframework.context.ApplicationContext;
@@ -39,16 +39,21 @@ public class InitializeSubjectDetailBeanManagerConfigurer extends GlobalAuthenti
 
     private ApplicationContext context;
 
-    public InitializeSubjectDetailBeanManagerConfigurer(ApplicationContext context){
+    public InitializeSubjectDetailBeanManagerConfigurer(ApplicationContext context, ObjectPostProcessor<Object> objectPostProcessor){
+        super(objectPostProcessor);
         this.context = context;
     }
 
     @Override
     public void init(AuthenticationManagerBuilder builder) throws Exception {
-        builder.apply(new InitializeSubjectDetailManagerConfigurer());
+        builder.apply(new InitializeSubjectDetailManagerConfigurer(getObjectPostProcessor()));
     }
 
     class InitializeSubjectDetailManagerConfigurer extends GlobalAuthenticationConfigurerAdapter{
+        public InitializeSubjectDetailManagerConfigurer(ObjectPostProcessor<Object> objectPostProcessor) {
+            super(objectPostProcessor);
+        }
+
         @Override
         public void configure(AuthenticationManagerBuilder builder) throws Exception {
             if (builder.isConfigured()) {
@@ -63,6 +68,8 @@ public class InitializeSubjectDetailBeanManagerConfigurer extends GlobalAuthenti
 
             DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
             provider.setSubjectDetailService(subjectDetailService);
+
+            provider = postProcessor(provider);
             if (passwordEncoder != null) {
                 provider.setPasswordEncoder(passwordEncoder);
             }

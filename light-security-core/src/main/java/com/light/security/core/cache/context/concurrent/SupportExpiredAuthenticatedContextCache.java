@@ -29,8 +29,11 @@ public class SupportExpiredAuthenticatedContextCache extends AbstractSupportExpi
     }
 
     @Override
-    protected void elementExpiredEvent(String s, InternalExpiredValueWrapper<Authentication> expiredValueWrapper) {
-        // TODO: 2019-11-22 引入事件机制解决 
+    protected void elementExpiredEvent(String key, InternalExpiredValueWrapper<Authentication> expiredValueWrapper) {
+        // TODO: 2019-11-22 引入事件机制解决
+        if (logger.isDebugEnabled()){
+            logger.debug("你可以在删除 key is {} 的同时, 做别的关联操作", key);
+        }
     }
 
     /**
@@ -41,6 +44,9 @@ public class SupportExpiredAuthenticatedContextCache extends AbstractSupportExpi
      */
     private boolean keyEquals(String origin_key, String now_key){
         // TODO: 2019-11-22 暂时不进行实现，因为目前还没有想好使用什么作为key
+        if (logger.isDebugEnabled()){
+            logger.debug("还没有实现重复值的比对, 这应该是一个可逆的签名");
+        }
         return false;
     }
 }

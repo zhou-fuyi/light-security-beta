@@ -1,6 +1,7 @@
 package com.light.security.core.authentication.subject;
 
 import com.light.security.core.access.role.GrantedRole;
+import com.light.security.core.authentication.CredentialsContainer;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.util.StringUtils;
@@ -13,7 +14,7 @@ import java.util.Collection;
  * @Author ZhouJian
  * @Date 2019-12-09
  */
-public class Subject implements SubjectDetail {
+public class Subject implements SubjectDetail, CredentialsContainer {
 
     private final Object key;
     private final String subjectName;
@@ -84,5 +85,10 @@ public class Subject implements SubjectDetail {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
+
+    @Override
+    public void eraseCredentials() {
+        this.password = null;
     }
 }

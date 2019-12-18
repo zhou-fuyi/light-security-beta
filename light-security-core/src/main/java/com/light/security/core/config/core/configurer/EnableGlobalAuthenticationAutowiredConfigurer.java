@@ -1,6 +1,7 @@
 package com.light.security.core.config.core.configurer;
 
 import com.light.security.core.config.annotation.EnableGlobalAuthentication;
+import com.light.security.core.config.core.ObjectPostProcessor;
 import com.light.security.core.config.core.builder.AuthenticationManagerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,8 @@ public class EnableGlobalAuthenticationAutowiredConfigurer extends GlobalAuthent
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ApplicationContext context;
 
-    public EnableGlobalAuthenticationAutowiredConfigurer(ApplicationContext context){
+    public EnableGlobalAuthenticationAutowiredConfigurer(ApplicationContext context, ObjectPostProcessor<Object> objectPostProcessor){
+        super(objectPostProcessor);
         this.context = context;
     }
 

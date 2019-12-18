@@ -1,6 +1,8 @@
 package com.light.security.core.util.signature;
 
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
+
 import java.util.UUID;
 
 /**
@@ -15,9 +17,10 @@ public class InternalDefaultSignature implements Signature{
 
     @Override
     public String sign(Object context) {
-        Assert.notNull(context, "传入参数不能为 null");
-        StringBuffer buffer = new StringBuffer(context.toString());
-        buffer.append(LIMIT_SYMBOL);
+        StringBuffer buffer = new StringBuffer(context == null ? "" : context.toString());
+        if (!StringUtils.isEmpty(buffer.toString())){
+            buffer.append(LIMIT_SYMBOL);
+        }
         buffer.append(UUID.randomUUID());
         return buffer.toString();
     }

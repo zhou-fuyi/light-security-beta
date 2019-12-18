@@ -69,18 +69,18 @@ public class AuthenticationConfiguration {
     }
 
     @Bean
-    public static GlobalAuthenticationConfigurerAdapter enableGlobalAuthenticationConfigurerAdapter(ApplicationContext context){
-        return new EnableGlobalAuthenticationAutowiredConfigurer(context);
+    public static GlobalAuthenticationConfigurerAdapter enableGlobalAuthenticationConfigurerAdapter(ApplicationContext context, ObjectPostProcessor<Object> objectPostProcessor){
+        return new EnableGlobalAuthenticationAutowiredConfigurer(context, objectPostProcessor);
     }
 
     @Bean
-    public static InitializeSubjectDetailBeanManagerConfigurer initializeSubjectDetailBeanManagerConfigurer(ApplicationContext context){
-        return new InitializeSubjectDetailBeanManagerConfigurer(context);
+    public static InitializeSubjectDetailBeanManagerConfigurer initializeSubjectDetailBeanManagerConfigurer(ApplicationContext context, ObjectPostProcessor<Object> objectPostProcessor){
+        return new InitializeSubjectDetailBeanManagerConfigurer(context, objectPostProcessor);
     }
 
     @Bean
-    public static InitializeAuthenticationProviderBeanManagerConfigurer initializeAuthenticationProviderBeanManagerConfigurer(ApplicationContext context){
-        return new InitializeAuthenticationProviderBeanManagerConfigurer(context);
+    public static InitializeAuthenticationProviderBeanManagerConfigurer initializeAuthenticationProviderBeanManagerConfigurer(ApplicationContext context, ObjectPostProcessor<Object> objectPostProcessor){
+        return new InitializeAuthenticationProviderBeanManagerConfigurer(context, objectPostProcessor);
     }
 
     /**

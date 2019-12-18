@@ -128,12 +128,12 @@ public class ExceptionTranslationFilter extends GenericFilter{
             Authentication authentication = securityContextHolder.getContext().getAuthentication();
             //判断authentication的来源: 匿名|rememberMe还是通过authenticate
             if (authenticationTrustResolver.isAnonymous(authentication) || authenticationTrustResolver.isRememberMe(authentication)){
-                logger.debug("Access is denied (user is "
-                                + (authenticationTrustResolver.isAnonymous(authentication) ? "anonymous" : "not fully authenticated")
+                logger.debug("访问被拒绝(Subject is "
+                                + (authenticationTrustResolver.isAnonymous(authentication) ? "anonymous" : "没有进行充分的认证")
                                 + "); redirecting to authentication entry point", exception);
 
                 sendStartAuthentication(request, response, chain, new InsufficientAuthenticationException(401,
-                                "Full authentication is required to access this resource"));
+                                "需要完全认证才能访问该资源(未认证账户或认证不充分, 请重新认证)"));
             }else {
                 logger.debug("Access is denied (user is not anonymous); delegating to AccessDeniedHandler", exception);
                 /**

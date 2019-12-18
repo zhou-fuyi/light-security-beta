@@ -45,12 +45,12 @@ public abstract class AbstractSupportExpiredCheckTask<K, V extends InternalConte
                         while (iterator.hasNext()){
                             key = iterator.next();
                             if (expiredConcurrentContextCache.get(key).isExpired()){
-                                if (logger.isDebugEnabled()){
-                                    logger.debug("key is {} 的数据已过期, 即将被移除");
-                                }
                                 expiredEvent(key, expiredConcurrentContextCache.get(key));
                                 iterator.remove();//将迭代器中的key移除
                                 expiredConcurrentContextCache.remove(key);
+                                if (logger.isDebugEnabled()){
+                                    logger.debug("key is {} 的数据已过期, 已经被移除", key);
+                                }
                             }
                         }
                     }

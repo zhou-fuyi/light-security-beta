@@ -56,4 +56,5 @@ public interface SubjectDetail extends Serializable {
      * @return <code>true</code> 表示账户已启用
      */
     boolean isEnabled();
+
 }

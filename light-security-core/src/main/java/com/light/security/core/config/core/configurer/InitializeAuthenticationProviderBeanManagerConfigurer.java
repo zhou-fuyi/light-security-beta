@@ -1,6 +1,7 @@
 package com.light.security.core.config.core.configurer;
 
 import com.light.security.core.access.AuthenticationProvider;
+import com.light.security.core.config.core.ObjectPostProcessor;
 import com.light.security.core.config.core.builder.AuthenticationManagerBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.Order;
@@ -30,16 +31,21 @@ public class InitializeAuthenticationProviderBeanManagerConfigurer extends Globa
 
     private final ApplicationContext context;
 
-    public InitializeAuthenticationProviderBeanManagerConfigurer(ApplicationContext context){
+    public InitializeAuthenticationProviderBeanManagerConfigurer(ApplicationContext context, ObjectPostProcessor<Object> objectPostProcessor){
+        super(objectPostProcessor);
         this.context = context;
     }
 
     @Override
     public void init(AuthenticationManagerBuilder builder) throws Exception {
-        builder.apply(new InitializeAuthenticationProviderManagerConfigurer());
+        builder.apply(new InitializeAuthenticationProviderManagerConfigurer(getObjectPostProcessor()));
     }
 
     class InitializeAuthenticationProviderManagerConfigurer extends GlobalAuthenticationConfigurerAdapter {
+        public InitializeAuthenticationProviderManagerConfigurer(ObjectPostProcessor<Object> objectPostProcessor) {
+            super(objectPostProcessor);
+        }
+
         @Override
         public void configure(AuthenticationManagerBuilder builder) throws Exception {
             if (builder.isConfigured()) {

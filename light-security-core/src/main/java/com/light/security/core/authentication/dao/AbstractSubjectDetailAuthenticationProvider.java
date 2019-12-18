@@ -1,21 +1,21 @@
 package com.light.security.core.authentication.dao;
 
 import com.light.security.core.access.AuthenticationProvider;
-import com.light.security.core.authentication.subject.DefaultPostAuthenticationChecker;
-import com.light.security.core.authentication.subject.DefaultPreAuthenticationChecker;
-import com.light.security.core.authentication.subject.SubjectDetail;
-import com.light.security.core.authentication.subject.SubjectDetailChecker;
+import com.light.security.core.authentication.context.holder.SecurityContextHolder;
+import com.light.security.core.authentication.subject.*;
 import com.light.security.core.authentication.token.Authentication;
 import com.light.security.core.authentication.token.SubjectNamePasswordAuthenticationToken;
 import com.light.security.core.cache.holder.AuthenticatedContextCacheHolder;
 import com.light.security.core.cache.model.InternalExpiredValueWrapper;
 import com.light.security.core.exception.AuthenticationException;
+import com.light.security.core.exception.InternalServiceException;
 import com.light.security.core.exception.SubjectNameNotFoundException;
 import com.light.security.core.util.signature.InternalDefaultSignature;
 import com.light.security.core.util.signature.Signature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 
 /**
@@ -27,7 +27,11 @@ import org.springframework.util.Assert;
 public abstract class AbstractSubjectDetailAuthenticationProvider implements AuthenticationProvider, InitializingBean {
 
     protected Logger logger = LoggerFactory.getLogger(getClass());
+    @Autowired
     private AuthenticatedContextCacheHolder authenticatedContextCacheHolder;
+
+    @Autowired
+    private SecurityContextHolder securityContextHolder;
     private SubjectDetailChecker preAuthenticationChecker = new DefaultPreAuthenticationChecker();
     private SubjectDetailChecker postAuthenticationChecker = new DefaultPostAuthenticationChecker();
     /**
@@ -98,7 +102,7 @@ public abstract class AbstractSubjectDetailAuthenticationProvider implements Aut
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        Assert.notNull(authenticatedContextCacheHolder, "AuthenticatedContextCacheHolder 不能为null");
+//        Assert.notNull(authenticatedContextCacheHolder, "AuthenticatedContextCacheHolder 不能为null");
         doAfterPropertiesSet();
     }
 
@@ -107,8 +111,15 @@ public abstract class AbstractSubjectDetailAuthenticationProvider implements Aut
      * @param authentication
      */
     protected void cacheAuthentication(Authentication authentication){
+        try {
+            ((Subject) authentication.getSubject()).eraseCredentials();
+        } catch (ClassCastException castException){
+            throw new InternalServiceException(500, "请重写该方法完成 SubjectDetails 类型对象的密码脱敏处理");
+        }
+        securityContextHolder.getContext().setAuthentication(authentication);
         authentication = (SubjectNamePasswordAuthenticationToken) authentication;
-        String key = signature.sign(authentication.getName());
+//        String key = signature.sign(authentication.getName());
+        String key = signature.sign(null);
         ((SubjectNamePasswordAuthenticationToken) authentication).setAuth(key);
         authenticatedContextCacheHolder.put(key, new InternalExpiredValueWrapper<Authentication>(key, authentication));
     }

@@ -12,7 +12,8 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class AbstractSupportExpired<T> implements SupportExpired<T>{
 
-    private long additionTime = 60 * 60 * 24 * 15;//单位默认是秒
+//    private long additionTime = 60 * 60 * 24 * 15;//单位默认是秒
+    private long additionTime = 60;//单位默认是秒
     private TimeUnit unit = TimeUnit.SECONDS;//决定了expiredTime的单位, 默认是秒
     private T content;//被包装的数据对象
     private final String key;

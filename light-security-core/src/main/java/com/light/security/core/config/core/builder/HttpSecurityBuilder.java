@@ -4,15 +4,11 @@ import com.light.security.core.access.AuthenticationProvider;
 import com.light.security.core.authentication.AuthenticationManager;
 import com.light.security.core.authentication.SubjectDetailService;
 import com.light.security.core.authentication.context.holder.SecurityContextHolder;
-import com.light.security.core.config.SecurityInterceptorConfigurer;
+import com.light.security.core.config.core.configurer.*;
 import com.light.security.core.config.core.AbstractConfiguredSecurityBuilder;
 import com.light.security.core.config.core.ObjectPostProcessor;
 import com.light.security.core.config.core.SecurityBuilder;
 import com.light.security.core.config.core.SecurityConfigurerAdapter;
-import com.light.security.core.config.core.configurer.CorsConfigurer;
-import com.light.security.core.config.core.configurer.ExceptionTranslationConfigurer;
-import com.light.security.core.config.core.configurer.FormLoginConfigurer;
-import com.light.security.core.config.core.configurer.SecurityContextConfigurer;
 import com.light.security.core.filter.SubjectNamePasswordAuthenticationFilter;
 import com.light.security.core.filter.chain.DefaultSecurityFilterChain;
 import com.light.security.core.util.matcher.*;
@@ -70,6 +66,10 @@ public class HttpSecurityBuilder extends AbstractConfiguredSecurityBuilder<Defau
      */
     public CorsConfigurer<HttpSecurityBuilder> cors() throws Exception{
         return getOrApply(new CorsConfigurer<HttpSecurityBuilder>());
+    }
+
+    public AnonymousConfigurer<HttpSecurityBuilder> anonymous(SecurityContextHolder securityContextHolder) throws Exception{
+        return getOrApply(new AnonymousConfigurer<HttpSecurityBuilder>(securityContextHolder));
     }
 
     /**
