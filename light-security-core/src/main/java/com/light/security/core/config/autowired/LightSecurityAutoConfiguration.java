@@ -140,4 +140,14 @@ public class LightSecurityAutoConfiguration {
         return ignoredResourcesConfigurerAdapter;
     }
 
+    /**
+     * Session-Cookie模式下 token与缓存key值签名工具注册
+     * @return
+     */
+    @Bean
+    @ConditionalOnMissingBean(InternalDefaultSignature.class)
+    public Signature internalDefaultSignature(){
+        return new InternalDefaultSignature();
+    }
+
 }

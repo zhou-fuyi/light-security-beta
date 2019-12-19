@@ -4,6 +4,9 @@ import com.light.security.core.cache.context.concurrent.SupportExpiredAuthentica
 import com.light.security.core.cache.context.linked.SecurityMetadataSourceContextCache;
 import com.light.security.core.cache.holder.AuthenticatedContextCacheHolder;
 import com.light.security.core.cache.holder.SecurityMetadataSourceContextCacheHolder;
+import com.light.security.core.util.signature.Signature;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +20,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CacheHolderBeanConfiguration {
 
+    @Autowired
+    @Qualifier("internalDefaultSignature")
+    private Signature internalDefaultSignature;
+
     /**
      * 认证成功后认证数据的存储缓存注册
      * @return
@@ -24,7 +31,7 @@ public class CacheHolderBeanConfiguration {
     @Bean
     @ConditionalOnMissingBean(AuthenticatedContextCacheHolder.class)
     public AuthenticatedContextCacheHolder authenticatedContextCacheHolder(){
-        return new AuthenticatedContextCacheHolder(new SupportExpiredAuthenticatedContextCache());
+        return new AuthenticatedContextCacheHolder(new SupportExpiredAuthenticatedContextCache(internalDefaultSignature));
     }
 
     /**

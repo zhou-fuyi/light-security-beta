@@ -2,6 +2,8 @@ package com.light.security.core.cache.context.concurrent;
 
 import com.light.security.core.authentication.token.Authentication;
 import com.light.security.core.cache.model.InternalExpiredValueWrapper;
+import com.light.security.core.util.signature.Signature;
+import org.springframework.util.Assert;
 
 import java.util.Iterator;
 
@@ -13,19 +15,31 @@ import java.util.Iterator;
  */
 public class SupportExpiredAuthenticatedContextCache extends AbstractSupportExpiredConcurrentContextCache<String, InternalExpiredValueWrapper<Authentication>> {
 
+    /**
+     * 用于解决内容重复的情况
+     */
+    private Signature signature;
+
+    public SupportExpiredAuthenticatedContextCache(Signature signature){
+        Assert.notNull(signature, "构造器不接受空值参数 --> signature is null");
+        this.signature = signature;
+    }
+
     @Override
-    public void put(String s, InternalExpiredValueWrapper<Authentication> authenticationInternalExpiredValueWrapper) {
+    public void put(String now, InternalExpiredValueWrapper<Authentication> authenticationInternalExpiredValueWrapper) {
         Iterator<String> iterator = getContext().keySet().iterator();
         while (iterator.hasNext()){
-            String key = iterator.next();
-            if (keyEquals(s, key)){
-                logger.info("重复认证产生数据删除");
-                elementExpiredEvent(key, get(key));
-                remove(key);
+            String origin = iterator.next();
+            if (keyEquals(now, origin)){
+                if (logger.isDebugEnabled()){
+                    logger.debug("旧的key值为: {}, 即将删除对应的认证数据", origin);
+                }
+                elementExpiredEvent(origin, get(origin));
+                remove(origin);
                 break;
             }
         }
-        super.put(s, authenticationInternalExpiredValueWrapper);
+        super.put(now, authenticationInternalExpiredValueWrapper);
     }
 
     @Override
@@ -43,10 +57,6 @@ public class SupportExpiredAuthenticatedContextCache extends AbstractSupportExpi
      * @return
      */
     private boolean keyEquals(String origin_key, String now_key){
-        // TODO: 2019-11-22 暂时不进行实现，因为目前还没有想好使用什么作为key
-        if (logger.isDebugEnabled()){
-            logger.debug("还没有实现重复值的比对, 这应该是一个可逆的签名");
-        }
-        return false;
+        return signature.signatureEquals(origin_key, now_key);
     }
 }

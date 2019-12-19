@@ -119,7 +119,8 @@ public abstract class AbstractSubjectDetailAuthenticationProvider implements Aut
         securityContextHolder.getContext().setAuthentication(authentication);
         authentication = (SubjectNamePasswordAuthenticationToken) authentication;
 //        String key = signature.sign(authentication.getName());
-        String key = signature.sign(null);
+//        String key = signature.sign(null);
+        String key = signature.sign(null, authentication.getName());
         ((SubjectNamePasswordAuthenticationToken) authentication).setAuth(key);
         authenticatedContextCacheHolder.put(key, new InternalExpiredValueWrapper<Authentication>(key, authentication));
     }
