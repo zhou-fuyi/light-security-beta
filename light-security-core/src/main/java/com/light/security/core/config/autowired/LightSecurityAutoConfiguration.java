@@ -15,7 +15,7 @@ import com.light.security.core.cache.holder.AuthenticatedContextCacheHolder;
 import com.light.security.core.config.core.configurer.GlobalAuthenticationConfigurerAdapter;
 import com.light.security.core.config.core.configurer.IgnoredResourcesConfigurerAdapter;
 import com.light.security.core.properties.SecurityProperties;
-import com.light.security.core.util.signature.InternalDefaultSignature;
+import com.light.security.core.util.signature.MD5Signature;
 import com.light.security.core.util.signature.Signature;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -142,12 +142,13 @@ public class LightSecurityAutoConfiguration {
 
     /**
      * Session-Cookie模式下 token与缓存key值签名工具注册
+     * 基于MD5实现的签名工具
      * @return
      */
     @Bean
-    @ConditionalOnMissingBean(InternalDefaultSignature.class)
-    public Signature internalDefaultSignature(){
-        return new InternalDefaultSignature();
+    @ConditionalOnMissingBean(MD5Signature.class)
+    public Signature md5Signature(){
+        return new MD5Signature();
     }
 
 }

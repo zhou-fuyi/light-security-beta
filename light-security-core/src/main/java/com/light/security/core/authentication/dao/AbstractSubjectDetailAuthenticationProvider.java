@@ -10,7 +10,7 @@ import com.light.security.core.cache.model.InternalExpiredValueWrapper;
 import com.light.security.core.exception.AuthenticationException;
 import com.light.security.core.exception.InternalServiceException;
 import com.light.security.core.exception.SubjectNameNotFoundException;
-import com.light.security.core.util.signature.InternalDefaultSignature;
+import com.light.security.core.util.signature.MD5Signature;
 import com.light.security.core.util.signature.Signature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,10 +35,9 @@ public abstract class AbstractSubjectDetailAuthenticationProvider implements Aut
     private SubjectDetailChecker preAuthenticationChecker = new DefaultPreAuthenticationChecker();
     private SubjectDetailChecker postAuthenticationChecker = new DefaultPostAuthenticationChecker();
     /**
-     * 默认签名实现, 不可以, 其实就是包装了一下UUID
-     *
+     * 基于MD5实现的签名工具
      */
-    private Signature signature = new InternalDefaultSignature();
+    private Signature signature = new MD5Signature();
 
     /**
      * 由子类实现并定义自己的检查逻辑, 通常这里都会进行密码校验
@@ -117,9 +116,6 @@ public abstract class AbstractSubjectDetailAuthenticationProvider implements Aut
             throw new InternalServiceException(500, "请重写该方法完成 SubjectDetails 类型对象的密码脱敏处理");
         }
         securityContextHolder.getContext().setAuthentication(authentication);
-        authentication = (SubjectNamePasswordAuthenticationToken) authentication;
-//        String key = signature.sign(authentication.getName());
-//        String key = signature.sign(null);
         String key = signature.sign(null, authentication.getName());
         ((SubjectNamePasswordAuthenticationToken) authentication).setAuth(key);
         authenticatedContextCacheHolder.put(key, new InternalExpiredValueWrapper<Authentication>(key, authentication));
@@ -151,6 +147,9 @@ public abstract class AbstractSubjectDetailAuthenticationProvider implements Aut
         this.authenticatedContextCacheHolder = authenticatedContextCacheHolder;
     }
 
+    public void setSignature(Signature signature) {
+        this.signature = signature;
+    }
 
     private SubjectDetail getSubjectFormCache(String key){
         Authentication authentication = null;

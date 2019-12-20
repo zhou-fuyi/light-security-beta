@@ -20,10 +20,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CacheHolderBeanConfiguration {
 
-    @Autowired
-    @Qualifier("internalDefaultSignature")
-    private Signature internalDefaultSignature;
-
     /**
      * 认证成功后认证数据的存储缓存注册
      * @return
@@ -31,7 +27,7 @@ public class CacheHolderBeanConfiguration {
     @Bean
     @ConditionalOnMissingBean(AuthenticatedContextCacheHolder.class)
     public AuthenticatedContextCacheHolder authenticatedContextCacheHolder(){
-        return new AuthenticatedContextCacheHolder(new SupportExpiredAuthenticatedContextCache(internalDefaultSignature));
+        return new AuthenticatedContextCacheHolder(new SupportExpiredAuthenticatedContextCache());
     }
 
     /**
