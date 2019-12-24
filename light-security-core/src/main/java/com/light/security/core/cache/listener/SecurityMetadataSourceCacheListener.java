@@ -224,6 +224,7 @@ public class SecurityMetadataSourceCacheListener extends AbstractCacheContextLis
                     }
                 }
             };
+            logger.debug("target class name : {}", ignoredOpenedAuthoritiesSecurityConfigurerAdapter.getClass().getName());
             beanFactory.registerSingleton(ignoredOpenedAuthoritiesSecurityConfigurerAdapter.getClass().getName(), ignoredOpenedAuthoritiesSecurityConfigurerAdapter);
         }
     }

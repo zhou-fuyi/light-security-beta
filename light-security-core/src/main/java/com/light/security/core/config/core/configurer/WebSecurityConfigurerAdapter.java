@@ -182,6 +182,10 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 
         Map<Class<? extends Object>, Object> sharedObjects = createSharedObjects();
 
+        /**
+         * 这里的{@link #authenticationManagerBuilder}便是{@link FormLoginConfigurer}中配置的{@link AuthenticationManagerBuilder}
+         * 通过共享对象进行分享, 具体添加过程可见{@link HttpSecurityBuilder}的构造方法中的实现
+         */
         httpSecurityBuilder = new HttpSecurityBuilder(objectPostProcessor, authenticationManagerBuilder, sharedObjects);
         /**
          * disableDefaults: 禁用默认配置
@@ -197,6 +201,10 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
                     .exceptionTranslation(securityContextHolder);
 
             ClassLoader classLoader = this.context.getClassLoader();
+            /**
+             * SpringFactoriesLoader 是 Spring 工厂加载机制的核心底层实现类。它的主要作用是 从 META-INF/spring.factories 路径下加载指定接口的实现类
+             * 这里是加载 AbstractHttpConfigurer.class 为 key 的实现配置类
+             */
             List<AbstractHttpConfigurer> defaultHttpConfigurers = SpringFactoriesLoader.loadFactories(AbstractHttpConfigurer.class, classLoader);
             for (AbstractHttpConfigurer httpConfigurer : defaultHttpConfigurers){
                 httpSecurityBuilder.apply(httpConfigurer);
